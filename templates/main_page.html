@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    {% if name %}
+        <h3>Привет {{ name }}</h3>
+        <p>{{ form.profile(type="submit", class="btn btn-primary") }}</p><br>
+    {% else %}
+        <p>{{ form.reg(type="submit", class="btn btn-primary") }}</p><br>
+        <p>{{ form.log(type="submit", class="btn btn-primary") }}</p>
+    {% endif %}
+    {{message}}
+</form>
+{% endblock %}
