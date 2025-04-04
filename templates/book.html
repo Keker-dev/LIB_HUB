@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Книга {{ book.name }}</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <h3>Автор: {{ book.author.name }}</h3>
+    <p>{{ form.read(type="submit", class="btn btn-primary") }}</p>
+    {% if usr == book.author %}
+        <p>{{ form.add_page(type="submit", class="btn btn-primary") }}</p>
+    {% endif %}
+    {{ message }}
+</form>
+{% endblock %}

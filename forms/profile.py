@@ -4,4 +4,4 @@ from wtforms.validators import DataRequired
 
 
 class ProfileForm(FlaskForm):
-    submit = SubmitField('Выйти из аккаунта')
+    submit = SubmitField('Редактировать')

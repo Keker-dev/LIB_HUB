@@ -1,5 +1,6 @@
 import datetime
 import sqlalchemy
+from sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash
 from .db_session import SqlAlchemyBase
 
@@ -14,8 +15,7 @@ class User(SqlAlchemyBase):
                               index=True, unique=True, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     reg_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
-
-    # news = orm.relationship("News", back_populates='user')
+    books = orm.relationship("Book", back_populates='author')
 
     def __repr__(self):
         return f"<User> {self.id} {self.name}"
