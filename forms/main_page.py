@@ -7,3 +7,4 @@ class MainPageForm(FlaskForm):
     reg = SubmitField('Зарегистрироваться')
     log = SubmitField('Вход')
     profile = SubmitField('Профиль')
+    add_book = SubmitField("Добавить книгу")

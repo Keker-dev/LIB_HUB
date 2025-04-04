@@ -6,6 +6,7 @@
     {% if name %}
         <h3>Привет {{ name }}</h3>
         <p>{{ form.profile(type="submit", class="btn btn-primary") }}</p><br>
+        <p>{{ form.add_book(type="submit", class="btn btn-primary") }}</p>
     {% else %}
         <p>{{ form.reg(type="submit", class="btn btn-primary") }}</p><br>
         <p>{{ form.log(type="submit", class="btn btn-primary") }}</p>

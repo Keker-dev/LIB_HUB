@@ -4,7 +4,16 @@
 <h1>Профиль {{ name }}</h1>
 <form action="" method="post">
     {{ form.hidden_tag() }}
-    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-    {{message}}
+    <h3 align="center">О себе</h3><br>
+    <h3 align="center">Работы</h3>
+    <ul class="book-list">
+        {% for book in usr.books %}
+            <li><a href="/book/{{book.name}}">{{ book.name }}</a></li>
+        {% endfor %}
+    </ul>
+    {% if usr.name == name %}
+        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {% endif %}
+    {{ message }}
 </form>
 {% endblock %}
