@@ -11,6 +11,20 @@
         <p>{{ form.reg(type="submit", class="btn btn-primary") }}</p><br>
         <p>{{ form.log(type="submit", class="btn btn-primary") }}</p>
     {% endif %}
-    {{message}}
+    <br>
+    <nav>
+        <ul>
+            <li>
+                <p>
+                    {{ form.search.label }}
+                    {{ form.search(class="form-control") }}
+                </p>
+            </li>
+            <li><p>{{ form.search_submit(type="submit", class="btn btn-primary") }}</p></li>
+        </ul>
+    </nav>
+    {% if message %}
+        <p class="alert alert-danger" role="alert">{{message}}</p>
+    {% endif %}
 </form>
 {% endblock %}

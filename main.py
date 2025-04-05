@@ -1,3 +1,5 @@
+from pyexpat.errors import messages
+
 from data.db_session import create_session, global_init
 from data.users import User
 from data.books import Book
@@ -36,6 +38,13 @@ def main_page():
         return redirect(f"/profile/{usr_name}")
     if form.add_book.data:
         return redirect(url_for("add_book_page"))
+    if form.search_submit.data:
+        book = db_sess.query(Book).filter(Book.name.like(f"%{form.search.data}%")).first()
+        if book:
+            return redirect(f"/book/{book.name}")
+        else:
+            return render_template("main_page.html", title="LIBHUB", name=usr_name, form=form,
+                                   message="Такой книги не найдено.")
     return render_template("main_page.html", title="LIBHUB", name=usr_name, form=form)
 
 

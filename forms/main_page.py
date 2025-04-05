@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import SubmitField
+from wtforms import SubmitField, StringField
 from wtforms.validators import DataRequired
 
 
@@ -8,3 +8,5 @@ class MainPageForm(FlaskForm):
     log = SubmitField('Вход')
     profile = SubmitField('Профиль')
     add_book = SubmitField("Добавить книгу")
+    search = StringField("Поиск книг")
+    search_submit = SubmitField("Найти")
