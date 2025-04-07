@@ -11,6 +11,19 @@
         <p>{{ form.reg(type="submit", class="btn btn-primary") }}</p><br>
         <p>{{ form.log(type="submit", class="btn btn-primary") }}</p>
     {% endif %}
-    {{message}}
+    <br>
+    <p>
+        {{ form.search.label }}
+        {{ form.search(class="form-control") }}
+    </p>
+    <p>{{ form.search_submit(type="submit", class="btn btn-primary") }}</p><br>
+    <ul>
+        {% for book in search_results %}
+        <li class="inv"><a href="/book/{{ book.name }}">{{ book.name }}</a></li>
+        {% endfor %}
+    </ul>
+    {% if message %}
+        <p class="alert alert-danger" role="alert">{{message}}</p>
+    {% endif %}
 </form>
 {% endblock %}

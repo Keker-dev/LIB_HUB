@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Профиль {{ name }}</h1>
+<h1>Профиль {{ ch_usr.name }}</h1>
 <form action="" method="post">
     {{ form.hidden_tag() }}
     <h3 align="center">О себе</h3><br>
     <h3 align="center">Работы</h3>
     <ul class="book-list">
-        {% for book in usr.books %}
-            <li><a href="/book/{{book.name}}">{{ book.name }}</a></li>
+        {% for book in ch_usr.books %}
+            <li class="inv"><a href="/book/{{ book.name }}">{{ book.name }}</a></li>
         {% endfor %}
     </ul>
-    {% if usr.name == name %}
+    {% if usr.name == ch_usr.name %}
         <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     {% endif %}
     {{ message }}
