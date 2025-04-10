@@ -4,6 +4,7 @@ from data.db_session import create_session, global_init
 from data.users import User
 from data.books import Book
 from data.pages import Page
+from data.comments import Comment
 import datetime
 from forms.login import LoginForm
 from forms.book import BookForm
@@ -168,21 +169,28 @@ def book_page(book_name):
 @app.route("/book/<book_name>/page/<page_num>", methods=["POST", "GET"])
 def book_page_page(book_name, page_num):
     global db_sess
+    usr_data = [session.get("id", None), session.get("email", None)]
     form, page_num = PageForm(), int(page_num)
     book = db_sess.query(Book).filter(Book.name == book_name).first()
     if not book or not (0 <= page_num < len(book.pages)):
         return redirect(url_for("main_page"))
+    page = [pg for pg in book.pages if pg.number == page_num][0]
     if form.next.data:
         return redirect(url_for("book_page_page", book_name=book_name,
                                 page_num=page_num + 1 if page_num + 1 < len(book.pages) else page_num))
     if form.prev.data:
         return redirect(url_for("book_page_page", book_name=book_name,
                                 page_num=page_num - 1 if page_num - 1 >= 0 else 0))
+    if form.comm_sub.data:
+        comm = Comment(text=form.comm_field.data, author_id=usr_data[0], page_id=page.id, number=len(page.comments))
+        db_sess.add(comm)
+        db_sess.commit()
     prms = {
         "title": f'Книга {book_name}',
         "book": book,
-        "page": [pg for pg in book.pages if pg.number == page_num][0],
+        "page": page,
         "form": form,
+        "user_id": usr_data[0],
     }
     return render_template('page.html', **prms)
 
@@ -191,7 +199,7 @@ def main():
     global db_sess
     global_init("db/main.db")
     db_sess = create_session()
-    app.run()
+    app.run(debug=True)
 
 
 if __name__ == '__main__':

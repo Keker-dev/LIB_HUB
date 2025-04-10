@@ -1,43 +1,62 @@
 {% extends "base.html" %}
 
 {% block content %}
-<style>h1 a {
+<style>
+.inv a {
     color: #000000;
     text-decoration: none;
 }
-h1 a:link {color: #000000;}
-h1 a:visited {color: #000000;}
-h1 a:hover {
+.inv a:link {color: #000000;}
+.inv a:visited {color: #000000;}
+.inv a:hover {
     color: #000000;
     text-decoration: None;
 }
-h1 a:active {color: #000000;}
-nav ul {
-    list-style: none;
-    padding: 0;
+.inv a:active {color: #000000;}
+.comm {
+    border: solid;
+    border-radius: 25px;
+    padding: 10px;
 }
-nav ul li {
-    display: inline;
-    margin: 0 10px;
-}
+.one-line {display:flex;}
+.filled {justify-content: space-between;}
 </style>
 <form action="" method="post">
     {{ form.hidden_tag() }}
-    <h1><a href="/book/{{ book.name }}">Книга {{ book.name }}</a></h1>
-    <nav>
-        <ul>
-            <li>{{ form.prev(type="submit", class="btn btn-primary") }}</li>
-            <li>{{ form.next(type="submit", class="btn btn-primary") }}</li>
-        </ul>
-    </nav>
-    <h2 align="center">{{ page.number }}. {{ page.name }}</h2><br>
+    <h2 class="inv"><a href="/book/{{ book.name }}">Книга {{ book.name }}</a></h2>
+    <div class="one-line filled">
+        <p>{{ form.prev(type="submit", class="btn btn-primary") }}</p>
+        <p>{{ form.next(type="submit", class="btn btn-primary") }}</p>
+    </div>
+    <h2 align="center">{{ page.number + 1 }}. {{ page.name }}</h2><br>
     <p>{{ page.text }}</p><br>
-    <nav>
-        <ul>
-            <li>{{ form.prev(type="submit", class="btn btn-primary") }}</li>
-            <li>{{ form.next(type="submit", class="btn btn-primary") }}</li>
-        </ul>
-    </nav>
+    <div class="one-line filled">
+        <p>{{ form.prev(type="submit", class="btn btn-primary") }}</p>
+        <p>{{ form.next(type="submit", class="btn btn-primary") }}</p>
+    </div>
+    <h3>Комментарии</h3>
+    <p>
+        {{ form.comm_field.label }}<br>
+        {{ form.comm_field(class="form-control") }}<br>
+        {% for error in form.comm_field.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>{{ form.comm_sub(type="submit", class="btn btn-primary") }}</p>
+    {% for comm in page.comments[::-1] %}
+    <div class="comm">
+        <div class="one-line filled">
+            <h4 class="inv"><a href="/profile/{{ comm.author.name }}">{{ comm.author.name }}</a></h4>
+            <p style="color: #888888">{{ comm.reg_date }}</p>
+        </div>
+        <p style="margin-left: 20px">{{ comm.text }}</p>
+        {% if comm.author_id != user_id %}
+        <p align="center">{{ form.like(type="submit", class="btn btn-primary") }}</p>
+        {% endif %}
+    </div><br>
+    {% endfor %}
     {{ message }}
 </form>
 {% endblock %}

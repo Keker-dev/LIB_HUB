@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+.inv a {
+    color: #000000;
+    text-decoration: none;
+}
+.inv a:link {color: #000000;}
+.inv a:visited {color: #000000;}
+.inv a:hover {
+    color: #000000;
+    text-decoration: None;
+}
+.inv a:active {color: #000000;}
+</style>
 <h1>Добавление главы</h1>
 <form action="" method="post">
     {{ form.hidden_tag() }}
