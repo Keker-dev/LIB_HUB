@@ -15,6 +15,7 @@ class Page(SqlAlchemyBase):
     reg_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     book_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("books.id"))
     book = orm.relationship('Book')
+    comments = orm.relationship("Comment", back_populates='page')
 
     def __repr__(self):
         return f"<Page> {self.id} {self.name}"

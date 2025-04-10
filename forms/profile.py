@@ -5,3 +5,4 @@ from wtforms.validators import DataRequired
 
 class ProfileForm(FlaskForm):
     submit = SubmitField('Редактировать')
+    like = SubmitField('Лайк')

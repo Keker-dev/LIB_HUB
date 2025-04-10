@@ -13,6 +13,8 @@
     </ul>
     {% if usr.name == ch_usr.name %}
         <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {% else %}
+        <p>{{ form.like(type="submit", class="btn btn-primary") }}</p>
     {% endif %}
     {{ message }}
 </form>

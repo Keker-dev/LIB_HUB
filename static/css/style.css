@@ -17,3 +17,8 @@ nav ul li {
     display: inline;
     margin: 0 10px;
 }
+.comm {
+    border: solid;
+    border-radius: 25px;
+    padding: 10px;
+}
