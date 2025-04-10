@@ -1,3 +1,7 @@
+.inv{
+    margin-top: 20px;
+    margin-left: 10px;
+}
 .inv a {
     color: #000000;
     text-decoration: none;
@@ -16,4 +20,38 @@ nav ul {
 nav ul li {
     display: inline;
     margin: 0 10px;
+}
+body{
+    background: #dede8e;
+    font-family: "Verdana", sans-serif;
+}
+.container{
+    margin-top: 100px;
+    padding: 100px;
+    background-color: #d1d164;
+    border: 10px solid #c4c43f;
+    border-radius: 20px;
+}
+.navigation{
+    display: inline;
+}
+.header_block{
+    display:inline-block;
+}
+.book{
+    margin-bottom: 20px
+}
+.btn{
+    background-color: #a1a132;
+    border-color: #a1a132;
+}
+.btn:hover{
+    background-color: #787825;
+    border-color: #787825;
+}
+.search:hover{
+    border-color: #787825
+}
+.searchbtn{
+
 }

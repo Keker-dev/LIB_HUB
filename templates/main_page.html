@@ -14,9 +14,9 @@
     <br>
     <p>
         {{ form.search.label }}
-        {{ form.search(class="form-control") }}
+        {{ form.search(class="form-control search") }}
     </p>
-    <p>{{ form.search_submit(type="submit", class="btn btn-primary") }}</p><br>
+    <button type="submit" class="searchbtn"><img src="../static/images/search.png" width="20"></button><br>
     <ul>
         {% for book in search_results %}
         <li class="inv"><a href="/book/{{ book.name }}">{{ book.name }}</a></li>

@@ -1,5 +1,7 @@
 from idlelib.searchengine import search_reverse
 
+from jinja2.ext import debug
+
 from data.db_session import create_session, global_init
 from data.users import User
 from data.books import Book
@@ -47,7 +49,7 @@ def main_page():
         else:
             return render_template("main_page.html", title="LIBHUB", name=usr_name, form=form,
                                    message="Такой книги не найдено.")
-    return render_template("main_page.html", title="LIBHUB", name=usr_name, form=form)
+    return render_template("main_page.html", title="LIBHUB", name=usr_name, form=form, debug=True)
 
 
 @app.route("/register", methods=["POST", "GET"])
