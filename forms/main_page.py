@@ -9,4 +9,4 @@ class MainPageForm(FlaskForm):
     profile = SubmitField('Профиль')
     add_book = SubmitField("Добавить книгу")
     search = StringField("Поиск книг")
-    search_submit = SubmitField("Найти")
+    search_submit = SubmitField("")
