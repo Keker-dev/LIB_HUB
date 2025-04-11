@@ -1,7 +1,3 @@
-from idlelib.searchengine import search_reverse
-
-from jinja2.ext import debug
-
 from data.db_session import create_session, global_init
 from data.users import User
 from data.books import Book
@@ -32,7 +28,13 @@ def main_page():
     usr_data = [session.get("id", None), session.get("email", None)]
     usr_name, form = None, MainPageForm()
     if all(usr_data):
-        usr_name = db_sess.query(User).filter(User.id == usr_data[0]).first().name
+        usr_name = db_sess.query(User).filter(User.id == usr_data[0]).first()
+        if usr_name:
+            usr_name = usr_name.name
+        else:
+            session.pop("id")
+            session.pop("email")
+            return redirect(url_for("main_page"))
     if form.reg.data:
         return redirect(url_for("register_page"))
     if form.log.data:
@@ -88,6 +90,10 @@ def profile_page(name):
         return redirect(url_for("main_page"))
     if all(usr_data):
         usr = db_sess.query(User).filter(User.id == usr_data[0]).first()
+        if not usr:
+            session.pop("id")
+            session.pop("email")
+            return redirect(url_for("main_page"))
     return render_template('profile.html', title=f'Профиль {name}', form=form, ch_usr=ch_usr, usr=usr)
 
 
@@ -159,6 +165,10 @@ def book_page(book_name):
         return redirect(url_for("book_page_page", book_name=book_name, page_num=0))
     if all(usr_data):
         usr = db_sess.query(User).filter(User.id == usr_data[0]).first()
+        if not usr:
+            session.pop("id")
+            session.pop("email")
+            return redirect(url_for("main_page"))
     prms = {
         "form": form,
         "title": f'Книга {book_name}',

@@ -25,7 +25,13 @@ nav ul li {
     border: solid;
     border-radius: 25px;
     padding: 10px;
+    transition: 0.5s;
 }
+.comm:hover {
+    transform: scale(1.02);
+}
+.one-line {display:flex;}
+.filled {justify-content: space-between;}
 body{
     background: #dede8e;
     font-family: "Verdana", sans-serif;
@@ -49,14 +55,22 @@ body{
 .btn{
     background-color: #a1a132;
     border-color: #a1a132;
+    transition: 0.5s;
 }
 .btn:hover{
     background-color: #787825;
     border-color: #787825;
+    transform: scale(1.05);
 }
 .search:hover{
-    border-color: #787825
+    border-color: #787825;
 }
 .searchbtn{
-
+    background-color: rgba(0, 0, 0, 0);
+    border-color: rgba(0, 0, 0, 0);
+    margin-left: 10px;
 }
+
+
+/* todo: dark_theme bg: 1c1c1c; main_bg: 2d2d2f; hover: 2b1d18; font: white*/
+/* todo: light_theme bg: 413023; main_bg: faf5ea; hover: 2b1d18; font: black*/

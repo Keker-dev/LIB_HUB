@@ -15,6 +15,7 @@ class Book(SqlAlchemyBase):
     reg_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     likes = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     in_favorites = sqlalchemy.Column(sqlalchemy.String, default="[]")
+    tags = sqlalchemy.Column(sqlalchemy.String, default="[]")
     author_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
     author = orm.relationship('User')
 

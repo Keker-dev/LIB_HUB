@@ -12,11 +12,14 @@
         <p>{{ form.log(type="submit", class="btn btn-primary") }}</p>
     {% endif %}
     <br>
-    <p>
-        {{ form.search.label }}
-        {{ form.search(class="form-control search") }}
-    </p>
-    <button type="submit" class="searchbtn"><img src="../static/images/search.png" width="20"></button><br>
+    <p>{{ form.search.label }}</p>
+    <div class="one-line filled" style="flex-direction: row;">
+        <p style="flex-grow: 1;">{{ form.search(class="form-control search") }}</p>
+        <button type="submit" class="searchbtn">
+            <img src="../static/images/search.png" width="25">
+        </button>
+    </div>
+    <br>
     <ul>
         {% for book in search_results %}
         <li class="inv"><a href="/book/{{ book.name }}">{{ book.name }}</a></li>
