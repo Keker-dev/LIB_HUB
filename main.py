@@ -12,6 +12,7 @@ from forms.register import RegisterForm
 from forms.main_page import MainPageForm
 from forms.profile import ProfileForm
 from forms.add_book import AddBookForm
+from forms.settings import SettingsForm
 from flask import Flask
 from flask import url_for, request, render_template, redirect, session
 
@@ -205,6 +206,25 @@ def book_page_page(book_name, page_num):
         "user_id": usr_data[0],
     }
     return render_template('page.html', **prms)
+
+
+@app.route("/settings", methods=["POST", "GET"])
+def settings_page():
+    global db_sess
+    usr_data = [session.get("id", None), session.get("email", None)]
+    form, usr = SettingsForm(), None
+    if all(usr_data):
+        usr = db_sess.query(User).filter(User.id == usr_data[0]).first()
+        if not usr:
+            session.pop("id")
+            session.pop("email")
+            return redirect(url_for("main_page"))
+    prms = {
+        "title": f'Настройки',
+        "form": form,
+        "user_id": usr_data[0],
+    }
+    return render_template('settings.html', **prms)
 
 
 def main():
