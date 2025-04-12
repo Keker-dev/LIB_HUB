@@ -43,7 +43,7 @@ def main_page():
         return redirect(url_for("profile_page", name=usr_name))
     if form.add_book.data:
         return redirect(url_for("add_book_page"))
-    if form.search_submit.data:
+    if request.method == "POST" and request.form["searchbtn"]:
         books = db_sess.query(Book).all()
         books = [i for i in books if form.search.data.lower() in i.name.lower()]
         if books:
