@@ -3,20 +3,12 @@
 {% block content %}
 <form action="" method="post">
     {{ form.hidden_tag() }}
-    {% if name %}
-        <h3>Привет {{ name }}</h3>
-        <p>{{ form.profile(type="submit", class="btn btn-primary") }}</p><br>
-        <p>{{ form.add_book(type="submit", class="btn btn-primary") }}</p>
-    {% else %}
-        <p>{{ form.reg(type="submit", class="btn btn-primary") }}</p><br>
-        <p>{{ form.log(type="submit", class="btn btn-primary") }}</p>
-    {% endif %}
-    <br>
-    <p>
+
+    <div class="search">
         {{ form.search.label }}
-        {{ form.search(class="form-control search") }}
-    </p>
-    <button type="submit" class="searchbtn"><img src="../static/images/search.png" width="20"></button><br>
+        <input type="text" class="search_label">
+        <button type="submit" class="searchbtn"><img src="../static/images/main_images/search.png" width="20"></button><br>
+    </div>
     <ul>
         {% for book in search_results %}
         <li class="inv"><a href="/book/{{ book.name }}">{{ book.name }}</a></li>
@@ -26,4 +18,17 @@
         <p class="alert alert-danger" role="alert">{{message}}</p>
     {% endif %}
 </form>
+{% endblock %}
+
+{% block reg %}
+    <form action="" method="post">
+
+        {% if name %}
+            <p class="header_block">{{ form.add_book(type="submit", class="btn btn-primary") }}</p>
+            <div class="header_block">{{ form.profile(type="submit", class="btn btn-primary profile_icon") }}</div>
+        {% else %}
+            <p class="header_block">{{ form.reg(type="submit", class="header_block btn btn-primary") }}</p>
+            <p class="header_block">{{ form.log(type="submit", class="header_block btn btn-primary") }}</p>
+        {% endif %}
+    </form>
 {% endblock %}
