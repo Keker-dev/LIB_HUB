@@ -3,20 +3,11 @@
 {% block content %}
 <form action="" method="post">
     {{ form.hidden_tag() }}
-    {% if name %}
-        <h3>Привет {{ name }}</h3>
-        <p>{{ form.profile(type="submit", class="btn btn-primary") }}</p><br>
-        <p>{{ form.add_book(type="submit", class="btn btn-primary") }}</p>
-    {% else %}
-        <p>{{ form.reg(type="submit", class="btn btn-primary") }}</p><br>
-        <p>{{ form.log(type="submit", class="btn btn-primary") }}</p>
-    {% endif %}
-    <br>
     <p>{{ form.search.label }}</p>
     <div class="one-line filled" style="flex-direction: row;">
         <p style="flex-grow: 1;">{{ form.search(class="form-control search") }}</p>
         <button type="submit" class="searchbtn" name="searchbtn" value="True">
-            <img src="../static/images/search.png" width="25">
+            <img src="../static/images/main_images/search.png" width="25">
         </button>
     </div>
     <br>
