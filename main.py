@@ -28,6 +28,7 @@ db_sess = None
 def main_page():
     usr_data = [session.get("id", None), session.get("email", None)]
     usr_name, form = None, MainPageForm()
+    print(form.profile)
     if all(usr_data):
         usr_name = db_sess.query(User).filter(User.id == usr_data[0]).first()
         if usr_name:

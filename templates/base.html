@@ -1,25 +1,65 @@
 <!doctype html>
 <html lang="ru">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
-          crossorigin="anonymous">
-    <link rel="stylesheet" href="../static/css/style.css">
-    <title>{{title}}</title>
-</head>
-<body>
-<!-- Begin page content -->
-<header class="navigation">
-    <h1 class="inv header_block"><a href="/">LITHUB</a></h1>
-    <a href="/">
-       <img src="../static/images/book.png" width="50" class="header_block book">
-    </a>
-</header>
-<main role="main" class="container">
-    {% block content %}{% endblock %}
-</main>
-</body>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet"
+              href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+              integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+              crossorigin="anonymous">
+        <link rel="stylesheet" href="../static/css/style.css">
+        <title>{{title}}</title>
+    </head>
+    <body>
+        <!-- Begin page content -->
+        <header class="navigation">
+            <h1 class="inv header_block"><a href="/">LITHUB</a></h1>
+            <a href="/">
+               <img src="../static/images/main_images/book.png" width="50" class="header_block book">
+            </a>
+            <div class="profile header_block">
+                {% block reg %}{% endblock %}
+            </div>
+        </header>
+            <aside class="side_nav">
+                <ol class="tag">
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                                        <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+                    <li>1</li>
+
+                </ol>
+            </aside>
+            <main role="main" class="container">
+                {% block content %}{% endblock %}
+            </main>
+
+    </body>
 </html>
