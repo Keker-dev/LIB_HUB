@@ -3,6 +3,7 @@ from data.users import User
 from data.books import Book
 from data.pages import Page
 from data.comments import Comment
+from data.tags import Tag
 import datetime
 from forms.login import LoginForm
 from forms.book import BookForm
@@ -28,7 +29,6 @@ db_sess = None
 def main_page():
     usr_data = [session.get("id", None), session.get("email", None)]
     usr_name, form = None, MainPageForm()
-    print(form.profile)
     if all(usr_data):
         usr_name = db_sess.query(User).filter(User.id == usr_data[0]).first()
         if usr_name:
@@ -123,6 +123,7 @@ def login_page():
 def add_book_page():
     global db_sess
     usr_data = [session.get("id", None), session.get("email", None)]
+    tags = db_sess.query(Tag).all()
     form = AddBookForm()
     if form.validate_on_submit() and all(usr_data):
         user = db_sess.query(User).filter(User.id == usr_data[0]).first()
@@ -135,7 +136,7 @@ def add_book_page():
         return redirect(url_for("book_page", book_name=form.name.data))
     elif not all(usr_data):
         return redirect(url_for("main_page"))
-    return render_template('add_book.html', title='Добавление книги', form=form)
+    return render_template('add_book.html', title='Добавление книги', form=form, tags=tags)
 
 
 @app.route("/book/<book_name>/add_page", methods=["POST", "GET"])

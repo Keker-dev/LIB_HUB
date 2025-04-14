@@ -40,9 +40,20 @@
             </p>
         {% endfor %}
     </p>
+    <p>Добавить теги</p>
+        <div>
+            {% for tag in tags %}
+            <label class="tag_checkbox">
+                <input type="checkbox" name="{{ tag.id }}">
+                <span>{{ tag.name }}</span>
+            </label>
+            {% endfor %}
+        </div>
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     {% if message %}
         <p class="alert alert-danger" role="alert">{{message}}</p>
     {% endif %}
+
+
 </form>
 {% endblock %}

@@ -10,4 +10,3 @@ class AddBookForm(FlaskForm):
     is_private = BooleanField("Только для подписчиков", validators=[Optional()])
     file = FileField("Файл книги (необязательно)", validators=[Optional()])
     submit = SubmitField('Опубликовать')
-    tags = []
