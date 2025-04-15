@@ -154,7 +154,6 @@ body{
 	margin: 0 5px 0 0;
 	user-select: none;
 	position: relative;
-	margin-right: 55%;
 }
 .tag_checkbox input[type=checkbox] {
 	z-index: -1;

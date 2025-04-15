@@ -25,7 +25,7 @@
 {% block reg %}
     <form action="" method="post">
 
-        {% if name %}
+        {% if usr.name %}
             <p class="header_block">{{ form.add_book(type="submit", class="btn btn-primary") }}</p>
             <div class="header_block">{{ form.profile(type="submit", class="btn btn-primary profile_icon") }}</div>
             <div class="header_block">{{ form.settings(type="submit", class="btn btn-primary settings_icon") }}</div>

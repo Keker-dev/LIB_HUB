@@ -27,23 +27,22 @@ db_sess = None
 
 @app.route("/", methods=["POST", "GET"])
 def main_page():
-    usr_data = [session.get("id", None), session.get("email", None)]
-    usr_name, form = None, MainPageForm()
+    usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
+    form, usr = MainPageForm(), None
     if all(usr_data):
-        usr_name = db_sess.query(User).filter(User.id == usr_data[0]).first()
-        if usr_name:
-            usr_name = usr_name.name
-        else:
+        usr = db_sess.query(User).filter(User.id == usr_data[0]).first()
+        if not usr:
             session.pop("id")
             session.pop("email")
+            session.pop("name")
             return redirect(url_for("main_page"))
     if form.reg.data:
         return redirect(url_for("register_page"))
     if form.log.data:
         return redirect(url_for("login_page"))
-    if form.profile.data and usr_name:
-        return redirect(url_for("profile_page", name=usr_name))
-    if form.settings.data and usr_name:
+    if form.profile.data and usr:
+        return redirect(url_for("profile_page", usr=usr))
+    if form.settings.data and usr:
         return redirect(url_for("settings_page"))
     if form.add_book.data:
         return redirect(url_for("add_book_page"))
@@ -51,18 +50,18 @@ def main_page():
         books = db_sess.query(Book).all()
         books = [i for i in books if form.search.data.lower() in i.name.lower()]
         if books:
-            return render_template("main_page.html", title="LIBHUB", name=usr_name, form=form,
+            return render_template("main_page.html", title="LIBHUB", usr=usr, form=form,
                                    search_results=books)
         else:
-            return render_template("main_page.html", title="LIBHUB", name=usr_name, form=form,
+            return render_template("main_page.html", title="LIBHUB", usr=usr, form=form,
                                    message="Такой книги не найдено.")
-    return render_template("main_page.html", title="LIBHUB", name=usr_name, form=form, debug=True)
+    return render_template("main_page.html", title="LIBHUB", usr=usr, form=form, debug=True)
 
 
 @app.route("/register", methods=["POST", "GET"])
 def register_page():
     global db_sess
-    usr_data = [session.get("id", None), session.get("email", None)]
+    usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form = RegisterForm()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
@@ -77,6 +76,7 @@ def register_page():
         db_sess.commit()
         session["id"] = user.id
         session["email"] = user.email
+        session["name"] = user.name
         return redirect(url_for("main_page"))
     elif all(usr_data):
         return redirect(url_for("main_page"))
@@ -87,16 +87,18 @@ def register_page():
 def profile_page(name):
     global db_sess
     form, usr, ch_usr = ProfileForm(), None, db_sess.query(User).filter(User.name == name).first()
-    usr_data = [session.get("id", None), session.get("email", None)]
+    usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     if form.submit.data and all(usr_data):
         session.pop("id")
         session.pop("email")
+        session.pop("name")
         return redirect(url_for("main_page"))
     if all(usr_data):
         usr = db_sess.query(User).filter(User.id == usr_data[0]).first()
         if not usr:
             session.pop("id")
             session.pop("email")
+            session.pop("name")
             return redirect(url_for("main_page"))
     return render_template('profile.html', title=f'Профиль {name}', form=form, ch_usr=ch_usr, usr=usr)
 
@@ -104,7 +106,7 @@ def profile_page(name):
 @app.route("/login", methods=["POST", "GET"])
 def login_page():
     global db_sess
-    usr_data = [session.get("id", None), session.get("email", None)]
+    usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form = LoginForm()
     if form.validate_on_submit() and not all(usr_data):
         user = db_sess.query(User).filter(
@@ -112,6 +114,7 @@ def login_page():
         if user and user.check_password(form.password.data):
             session["id"] = user.id
             session["email"] = user.email
+            session["name"] = user.name
         else:
             return render_template('login.html', title='Вход', form=form,
                                    message="Неправильный пароль или логин")
@@ -124,7 +127,7 @@ def login_page():
 @app.route("/add_book", methods=["POST", "GET"])
 def add_book_page():
     global db_sess
-    usr_data = [session.get("id", None), session.get("email", None)]
+    usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     tags = db_sess.query(Tag).all()
     form = AddBookForm()
     if form.validate_on_submit() and all(usr_data):
@@ -135,9 +138,8 @@ def add_book_page():
         tags_id = []
         for i in request.values:
             if "tag_" in i:
-                tags_id.append(i[4:])
-        print(tags_id)
-        book = Book(name=form.name.data, author_id=user.id, tags=','.join(tags_id))
+                tags_id.append(int(i[4:]))
+        book = Book(name=form.name.data, author_id=user.id, tags=str(sorted(tags_id)))
         db_sess.add(book)
         db_sess.commit()
         return redirect(url_for("book_page", book_name=form.name.data))
@@ -149,7 +151,7 @@ def add_book_page():
 @app.route("/book/<book_name>/add_page", methods=["POST", "GET"])
 def add_page_page(book_name):
     global db_sess
-    usr_data = [session.get("id", None), session.get("email", None)]
+    usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form = AddPageForm()
     if form.validate_on_submit() and all(usr_data):
         book = db_sess.query(Book).filter(Book.author_id == usr_data[0], Book.name == book_name).first()
@@ -166,7 +168,7 @@ def add_page_page(book_name):
 @app.route("/book/<book_name>", methods=["POST", "GET"])
 def book_page(book_name):
     global db_sess
-    usr_data = [session.get("id", None), session.get("email", None)]
+    usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form, usr = BookForm(), None
     if form.add_page.data and all(usr_data):
         return redirect(url_for("add_page_page", book_name=book_name))
@@ -191,7 +193,7 @@ def book_page(book_name):
 @app.route("/book/<book_name>/page/<page_num>", methods=["POST", "GET"])
 def book_page_page(book_name, page_num):
     global db_sess
-    usr_data = [session.get("id", None), session.get("email", None)]
+    usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form, page_num = PageForm(), int(page_num)
     book = db_sess.query(Book).filter(Book.name == book_name).first()
     if not book or not (0 <= page_num < len(book.pages)):
@@ -220,13 +222,14 @@ def book_page_page(book_name, page_num):
 @app.route("/settings", methods=["POST", "GET"])
 def settings_page():
     global db_sess
-    usr_data = [session.get("id", None), session.get("email", None)]
+    usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form, usr = SettingsForm(), None
     if all(usr_data):
         usr = db_sess.query(User).filter(User.id == usr_data[0]).first()
         if not usr:
             session.pop("id")
             session.pop("email")
+            session.pop("name")
             return redirect(url_for("main_page"))
     prms = {
         "title": f'Настройки',
@@ -240,6 +243,33 @@ def main():
     global db_sess
     global_init("db/main.db")
     db_sess = create_session()
+    if not db_sess.query(Tag).all():
+        tags = [['Фантастика', 'Миры будущего с чудесами технологий и неизведанными галактиками.'],
+                ['Приключения', 'Захватывающие путешествия главных героев, полные неожиданных встреч и испытаний.'],
+                ['Романтика', 'Истории о любви, страсти и сложных отношениях, пробуждающие чувства.'],
+                ['Ужасы', 'Темные и страшные сюжеты, погружающие в атмосферу неведомого и пугающего.'],
+                ['Триллер',
+                 'Напряженные сюжеты с интригующими поворотами, которые держат в напряжении до последней страницы.'],
+                ['Детская литература',
+                 'Яркие и увлекательные рассказы, которые развлекают и обучают маленьких читателей.'],
+                ['Популярная психология', 'Книги, помогающие разобраться в себе и улучшить качество жизни.'],
+                ['Исторический роман', 'Погружение в эпохи прошлого через призму вымышленных и реальных событий.'],
+                ['Научная фантастика', 'Исследование возможных научных достижений и их влияния на человечество.'],
+                ['Фэнтези', 'Очаровательные миры с магией, мифическими существами и эпическими квестами.'],
+                ['Автобиография', 'Жизненные истории известных личностей, вдохновляющие на изменения в своей жизни.'],
+                ['Детектив', 'Разгадывание загадок и расследование преступлений с хитроумными детективами.'],
+                ['Современная проза', 'Портреты повседневной жизни и драмы, отражающие реалии современности.'],
+                ['Поэзия', 'Стихотворные строки, передающие глубокие эмоции и чувства через метафоры.'],
+                ['Сатира', 'Умные, ироничные произведения, высмеивающие общественные недостатки и пороки.'],
+                ['Философия', 'Глубокие размышления о жизни, смысле существования и человеческой природе.'],
+                ['Кулинария', 'Рецепты и истории, вдохновляющие готовить и открывать новые вкусы.'],
+                ['Художественная литература',
+                 'Классические и современные произведения, раскрывающие человеческие переживания.'],
+                ['Криминал', 'Следствие, преступления и моральные дилеммы, о которых стоит задуматься.']]
+        for tag in tags:
+            db_sess.add(Tag(name=tag[0], about=tag[1]))
+        db_sess.commit()
+
     app.run(debug=True)
 
 
