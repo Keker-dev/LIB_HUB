@@ -41,11 +41,11 @@
         {% endfor %}
     </p>
     <p>Добавить теги</p>
-        <div>
+        <div class="add_tags">
             {% for tag in tags %}
             <label class="tag_checkbox">
-                <input type="checkbox" name="{{ tag.id }}">
-                <span>{{ tag.name }}</span>
+                <input type="checkbox" name="tag_{{ tag.id }}">
+                <span class="add_tag" data-title="({{tag.about}})">#{{ tag.name }}</span>
             </label>
             {% endfor %}
         </div>
