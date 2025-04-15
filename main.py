@@ -132,7 +132,12 @@ def add_book_page():
         if db_sess.query(Book).filter(Book.name == form.name.data).first():
             return render_template('add_book.html', title='Добавление книги', form=form,
                                    message="Книга с таким названием уже есть")
-        book = Book(name=form.name.data, author_id=user.id)
+        tags_id = []
+        for i in request.values:
+            if "tag_" in i:
+                tags_id.append(i[4:])
+        print(tags_id)
+        book = Book(name=form.name.data, author_id=user.id, tags=','.join(tags_id))
         db_sess.add(book)
         db_sess.commit()
         return redirect(url_for("book_page", book_name=form.name.data))
