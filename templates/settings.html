@@ -1,31 +1,48 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- todo: Сделать вкладки красивыми -->
 <style>
-.tabs > div:nth-of-type(2) div, .tabs div label input {display: none;}
+.tab-content, .tab input {display: none;}
 .tabs > div:has(> label:nth-of-type(1) input:checked) + div > div:nth-of-type(1),
 .tabs > div:has(> label:nth-of-type(2) input:checked) + div > div:nth-of-type(2),
 .tabs > div:has(> label:nth-of-type(3) input:checked) + div > div:nth-of-type(3) {display: block;}
-.tabs > div > label { display: block; height: 50px; width: 150px; border: solid; border-radius: 3px; border-top: 0px;
-border-left: 0px; text-align: center; cursor: pointer; margin-bottom: 0px;}
-.tabs > div:nth-of-type(1) {border: solid; border-radius: 3px; border-right: 0px; border-bottom: 0px;}
-.tabs div label:has(input[type="radio"]:checked) { border-right: 0px solid #fff; background-color: #d9d973;}
-.tabs div label:hover {background-color: #d9d973;}
-.tab {border: 3px solid #000; border-left: 0px; border-radius: 3px; padding: 10px; line-height: 125px;}
+.tab { display: block; height: 50px; width: 150px; border: solid; border-radius: 3px; text-align: center;
+cursor: pointer; margin-bottom: 0px; border-top: 0px; transition: background-color 0.3s;}
+.tab:nth-of-type(1) { border-top: solid;}
+.tab:has(input[type="radio"]:checked) { border-right: 0px solid #fff; background-color: rgba(255, 255, 255, 0.3);}
+.tab:hover {background-color: rgba(255, 255, 255, 0.2);}
+.tab-content {border: 3px solid #000; border-left: 0px; border-radius: 3px; padding: 10px; line-height: 200px;}
 </style>
 <h1>Настройки</h1>
 <form action="" method="post">
     {{ form.hidden_tag() }}
     <div class="tabs one-line filled" style="flex-direction: row;">
     <div>
-        <label><input type="radio" name="tabs_class" checked="checked"/>Настройки аккаунта</label>
-        <label><input type="radio" name="tabs_class"/>Настройки оформления</label>
-        <label><input type="radio" name="tabs_class"/>Дополнительно</label>
+        <label class="tab"><input type="radio" name="tabs_class" checked="checked"/>Настройки аккаунта</label>
+        <label class="tab"><input type="radio" name="tabs_class"/>Настройки оформления</label>
+        <label class="tab"><input type="radio" name="tabs_class"/>Дополнительно</label>
     </div>
     <div style="flex-grow: 1;">
-        <div class="tab">Первая вкладка</div>
-        <div class="tab">Вторая вкладка</div>
-        <div class="tab">Третья вкладка</div>
+        <div class="tab-content">
+            <p>
+                {{ form.change_name.label }}<br>
+                {{ form.change_name(class="form-control") }}<br>
+                {% for error in form.change_name.errors %}
+                    <p class="alert alert-danger" role="alert">{{ error }}</p>
+                {% endfor %}
+            </p>
+        </div>
+        <div class="tab-content">
+            <p>
+                {{ form.font_size.label }}<br>
+                {{ form.font_size(class="form-control") }}<br>
+                {% for error in form.font_size.errors %}
+                    <p class="alert alert-danger" role="alert">{{ error }}</p>
+                {% endfor %}
+            </p>
+        </div>
+        <div class="tab-content"><p>{{ form.del_history(type="submit", class="btn btn-primary") }}</p></div>
     </div>
     </div>
 </form>

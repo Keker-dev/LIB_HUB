@@ -28,7 +28,6 @@ db_sess = None
 def main_page():
     usr_data = [session.get("id", None), session.get("email", None)]
     usr_name, form = None, MainPageForm()
-    print(form.profile)
     if all(usr_data):
         usr_name = db_sess.query(User).filter(User.id == usr_data[0]).first()
         if usr_name:
@@ -43,6 +42,8 @@ def main_page():
         return redirect(url_for("login_page"))
     if form.profile.data and usr_name:
         return redirect(url_for("profile_page", name=usr_name))
+    if form.settings.data and usr_name:
+        return redirect(url_for("settings_page"))
     if form.add_book.data:
         return redirect(url_for("add_book_page"))
     if request.method == "POST" and request.form["searchbtn"]:

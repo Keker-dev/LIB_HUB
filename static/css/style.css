@@ -91,6 +91,20 @@ body{
     border-color: transparent;
     background-color: transparent;
 }
+.settings_icon{
+    background-image: url("../images/main_images/light_settings.png");
+    border-color: transparent;
+    background-color: transparent;
+    background-size: 100% 100%;
+    background-position: 45% 25%;
+    height:40px;
+    width:40px;
+}
+.settings_icon:hover{
+    border-color: transparent;
+    background-color: transparent;
+    transform: rotate(90deg);
+}
 .profile{
     margin-left: 70%;
 }
