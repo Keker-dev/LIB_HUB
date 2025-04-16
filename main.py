@@ -30,7 +30,8 @@ def main_page():
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form, usr = MainPageForm(), None
     if all(usr_data):
-        usr = db_sess.query(User).filter(User.id == usr_data[0]).first()
+        usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
+                                         User.name == usr_data[2]).first()
         if not usr:
             session.pop("id")
             session.pop("email")
@@ -41,7 +42,7 @@ def main_page():
     if form.log.data:
         return redirect(url_for("login_page"))
     if form.profile.data and usr:
-        return redirect(url_for("profile_page", usr=usr))
+        return redirect(url_for("profile_page", name=usr.name))
     if form.settings.data and usr:
         return redirect(url_for("settings_page"))
     if form.add_book.data:
@@ -89,12 +90,14 @@ def profile_page(name):
     form, usr, ch_usr = ProfileForm(), None, db_sess.query(User).filter(User.name == name).first()
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     if form.submit.data and all(usr_data):
+        return redirect(url_for("settings_page"))
         session.pop("id")
         session.pop("email")
         session.pop("name")
         return redirect(url_for("main_page"))
     if all(usr_data):
-        usr = db_sess.query(User).filter(User.id == usr_data[0]).first()
+        usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
+                                         User.name == usr_data[2]).first()
         if not usr:
             session.pop("id")
             session.pop("email")
@@ -131,7 +134,8 @@ def add_book_page():
     tags = db_sess.query(Tag).all()
     form = AddBookForm()
     if form.validate_on_submit() and all(usr_data):
-        user = db_sess.query(User).filter(User.id == usr_data[0]).first()
+        user = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
+                                          User.name == usr_data[2]).first()
         if db_sess.query(Book).filter(Book.name == form.name.data).first():
             return render_template('add_book.html', title='Добавление книги', form=form,
                                    message="Книга с таким названием уже есть")
@@ -176,7 +180,8 @@ def book_page(book_name):
     if form.read.data:
         return redirect(url_for("book_page_page", book_name=book_name, page_num=0))
     if all(usr_data):
-        usr = db_sess.query(User).filter(User.id == usr_data[0]).first()
+        usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
+                                         User.name == usr_data[2]).first()
         if not usr:
             session.pop("id")
             session.pop("email")
@@ -225,7 +230,8 @@ def settings_page():
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form, usr = SettingsForm(), None
     if all(usr_data):
-        usr = db_sess.query(User).filter(User.id == usr_data[0]).first()
+        usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
+                                         User.name == usr_data[2]).first()
         if not usr:
             session.pop("id")
             session.pop("email")
@@ -269,7 +275,6 @@ def main():
         for tag in tags:
             db_sess.add(Tag(name=tag[0], about=tag[1]))
         db_sess.commit()
-
     app.run(debug=True)
 
 

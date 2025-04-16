@@ -1,5 +1,12 @@
 <!doctype html>
 <html lang="ru">
+{% macro render_field(field, classes="form-control ") %}
+    {{ field.label }}
+    {{ field(class=classes) }}
+    {% for error in field.errors %}
+        <p class="alert alert-danger" role="alert">{{ error }}</p>
+    {% endfor %}
+{% endmacro %}
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">

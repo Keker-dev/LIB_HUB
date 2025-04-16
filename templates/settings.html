@@ -12,7 +12,11 @@ cursor: pointer; margin-bottom: 0px; border-top: 0px; transition: background-col
 .tab:nth-of-type(1) { border-top: solid;}
 .tab:has(input[type="radio"]:checked) { border-right: 0px solid #fff; background-color: rgba(255, 255, 255, 0.3);}
 .tab:hover {background-color: rgba(255, 255, 255, 0.2);}
-.tab-content {border: 3px solid #000; border-left: 0px; border-radius: 3px; padding: 10px; line-height: 200px;}
+.tab-content {border: 3px solid #000; border-left: 0px; border-radius: 3px; padding: 10px;}
+#change_about {height: 300px;}
+#logout {background-color: #d11;}
+#del_acc {background-color: #d11;}
+#font_size {width: 10%;}
 </style>
 <h1>Настройки</h1>
 <form action="" method="post">
@@ -25,24 +29,23 @@ cursor: pointer; margin-bottom: 0px; border-top: 0px; transition: background-col
     </div>
     <div style="flex-grow: 1;">
         <div class="tab-content">
-            <p>
-                {{ form.change_name.label }}<br>
-                {{ form.change_name(class="form-control") }}<br>
-                {% for error in form.change_name.errors %}
-                    <p class="alert alert-danger" role="alert">{{ error }}</p>
-                {% endfor %}
-            </p>
+            <p>{{ render_field(form.change_name) }}</p>
+            <p>{{ render_field(form.change_pass) }}</p>
+            <!-- todo: сделать вводимый текст сверху большого поля id="change_about" -->
+            <p>{{ render_field(form.change_about) }}</p>
+            <p>{{ form.logout(type="submit", class="btn btn-primary") }}</p>
+            <p>{{ form.del_acc(type="submit", class="btn btn-primary") }}</p>
         </div>
         <div class="tab-content">
-            <p>
-                {{ form.font_size.label }}<br>
-                {{ form.font_size(class="form-control") }}<br>
-                {% for error in form.font_size.errors %}
-                    <p class="alert alert-danger" role="alert">{{ error }}</p>
-                {% endfor %}
-            </p>
+            <p>{{ render_field(form.font) }}</p>
+            <p>{{ render_field(form.font_size) }}</p>
+            <p>{{ render_field(form.font_color) }}</p>
         </div>
-        <div class="tab-content"><p>{{ form.del_history(type="submit", class="btn btn-primary") }}</p></div>
+        <div class="tab-content">
+            <p>{{ render_field(form.ignore) }}</p>
+            <p>{{ render_field(form.check_books) }}</p>
+            <p>{{ form.del_history(type="submit", class="btn btn-primary") }}</p>
+        </div>
     </div>
     </div>
 </form>
