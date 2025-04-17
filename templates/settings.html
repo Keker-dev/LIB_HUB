@@ -30,20 +30,21 @@ cursor: pointer; margin-bottom: 0px; border-top: 0px; transition: background-col
     <div style="flex-grow: 1;">
         <div class="tab-content">
             <p>{{ render_field(form.change_name) }}</p>
-            <p>{{ render_field(form.change_pass) }}</p>
+            <p>{{ render_field(form.change_pass, type="password") }}</p>
             <!-- todo: сделать вводимый текст сверху большого поля id="change_about" -->
             <p>{{ render_field(form.change_about) }}</p>
+            <p style="display: none;">{{ form.submit(type="submit", class="btn btn-primary") }}</p>
             <p>{{ form.logout(type="submit", class="btn btn-primary") }}</p>
             <p>{{ form.del_acc(type="submit", class="btn btn-primary") }}</p>
         </div>
         <div class="tab-content">
             <p>{{ render_field(form.font) }}</p>
-            <p>{{ render_field(form.font_size) }}</p>
-            <p>{{ render_field(form.font_color) }}</p>
+            <p>{{ render_field(form.font_size, type="number") }}</p>
+            <p>{{ render_field(form.font_color, type="color") }}</p>
         </div>
         <div class="tab-content">
             <p>{{ render_field(form.ignore) }}</p>
-            <p>{{ render_field(form.check_books) }}</p>
+            <p>{{ render_field(form.check_books, type="number") }}</p>
             <p>{{ form.del_history(type="submit", class="btn btn-primary") }}</p>
         </div>
     </div>

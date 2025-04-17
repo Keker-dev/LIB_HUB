@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="ru">
-{% macro render_field(field, classes="form-control ") %}
+{% macro render_field(field, classes="form-control", type="") %}
     {{ field.label }}
-    {{ field(class=classes) }}
+    {{ field(class=classes, type=type) }}
     {% for error in field.errors %}
         <p class="alert alert-danger" role="alert">{{ error }}</p>
     {% endfor %}
@@ -35,6 +35,5 @@
             <main role="main" class="container">
                 {% block content %}{% endblock %}
             </main>
-
     </body>
 </html>

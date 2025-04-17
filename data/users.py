@@ -22,7 +22,7 @@ class User(SqlAlchemyBase):
     last_books = sqlalchemy.Column(sqlalchemy.String, default="[]")
     notifs = sqlalchemy.Column(sqlalchemy.String, default="[]")
     settings = sqlalchemy.Column(sqlalchemy.String, default='''{"font": "Arial", "font-size": 10, 
-    "font-color": "black", "ignore": False, "len-last-seen": 100}''')
+    "font-color": "#000000", "ignore": false, "len-last-seen": 100}''')
     books = orm.relationship("Book", back_populates='author')
     comments = orm.relationship("Comment", back_populates='author')
 

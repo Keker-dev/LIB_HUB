@@ -5,6 +5,7 @@ from data.pages import Page
 from data.comments import Comment
 from data.tags import Tag
 import datetime
+import json
 from forms.login import LoginForm
 from forms.book import BookForm
 from forms.page import PageForm
@@ -242,6 +243,51 @@ def settings_page():
         "form": form,
         "user_id": usr_data[0],
     }
+    setts = json.loads(usr.settings)
+    if form.logout.data:
+        session.pop("id")
+        session.pop("email")
+        session.pop("name")
+        return redirect(url_for("main_page"))
+    if form.del_acc.data:
+        session.pop("id")
+        session.pop("email")
+        session.pop("name")
+        db_sess.delete(usr)
+        db_sess.commit()
+        return redirect(url_for("main_page"))
+    if form.change_name.data and form.change_name.data != usr.name:
+        if db_sess.query(User).filter(User.name == form.change_name.data).first():
+            form.change_name.errors = tuple([*form.change_name.errors, "Это имя занято."])
+        else:
+            usr.name = form.change_name.data
+    if form.change_pass.data:
+        usr.set_password(form.change_pass.data)
+    if form.change_about.data:
+        usr.about = form.change_about.data
+    if form.change_about.data:
+        usr.about = form.change_about.data
+    if form.font.data:
+        setts["font"] = form.font.data
+    if form.font_color.data:
+        setts["font-color"] = form.font_color.data
+    if form.font_size.data:
+        setts["font-size"] = form.font_size.data
+    if form.ignore.data:
+        setts["ignore"] = form.ignore.data
+    if form.check_books.data:
+        setts["len-last-seen"] = form.check_books.data
+    if form.del_history.data:
+        usr.last_books = "[]"
+    usr.settings = json.dumps(setts)
+    db_sess.commit()
+    form.change_name.data = usr.name
+    form.change_about.data = usr.about
+    form.font_color.data = setts["font-color"]
+    form.font_size.data = setts["font-size"]
+    form.font.data = setts["font"]
+    form.ignore.data = setts["ignore"]
+    form.check_books.data = setts["len-last-seen"]
     return render_template('settings.html', **prms)
 
 
