@@ -1,12 +1,5 @@
 <!doctype html>
 <html lang="ru">
-{% macro render_field(field, classes="form-control ") %}
-    {{ field.label }}
-    {{ field(class=classes) }}
-    {% for error in field.errors %}
-        <p class="alert alert-danger" role="alert">{{ error }}</p>
-    {% endfor %}
-{% endmacro %}
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -14,7 +7,7 @@
               href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
               integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
               crossorigin="anonymous">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="../static/css/style.css">
         <title>{{title}}</title>
     </head>
     <body>
@@ -22,7 +15,7 @@
         <header class="navigation">
             <h1 class="inv header_block"><a href="/">LITHUB</a></h1>
             <a href="/">
-               <img src="{{ url_for('static', filename='images/main_images/book.png') }}" width="50" class="header_block book">
+               <img src="../static/images/main_images/book.png" width="50" class="header_block book">
             </a>
             <div class="profile header_block">
                 {% block reg %}{% endblock %}

@@ -1,6 +1,80 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+.inv{
+    margin-top: 20px;
+    margin-left: 10px;
+}
+.inv a {
+    color: #000000;
+    text-decoration: none;
+}
+.inv a:link {color: #000000;}
+.inv a:visited {color: #000000;}
+.inv a:hover {
+    color: #000000;
+    text-decoration: None;
+}
+.inv a:active {color: #000000;}
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+nav ul li {
+    display: inline;
+    margin: 0 10px;
+}
+.comm {
+    border: solid;
+    border-radius: 25px;
+    padding: 10px;
+    transition: 0.5s;
+}
+.comm:hover {
+    transform: scale(1.02);
+}
+.one-line {display:flex;}
+.filled {justify-content: space-between;}
+body{
+    background: #dede8e;
+    font-family: "Verdana", sans-serif;
+}
+.container{
+    margin-top: 100px;
+    padding: 100px;
+    background-color: #d1d164;
+    border: 10px solid #c4c43f;
+    border-radius: 20px;
+}
+.navigation{
+    display: inline;
+}
+.header_block{
+    display:inline-block;
+}
+.book{
+    margin-bottom: 20px
+}
+.btn{
+    background-color: #a1a132;
+    border-color: #a1a132;
+    transition: 0.5s;
+}
+.btn:hover{
+    background-color: #787825;
+    border-color: #787825;
+    transform: scale(1.05);
+}
+.search:hover{
+    border-color: #787825;
+}
+.searchbtn{
+    background-color: rgba(0, 0, 0, 0);
+    border-color: rgba(0, 0, 0, 0);
+    margin-left: 10px;
+}
+</style>
 <form action="" method="post">
     {{ form.hidden_tag() }}
     <h2 class="inv"><a href="/book/{{ book.name }}">Книга {{ book.name }}</a></h2>
