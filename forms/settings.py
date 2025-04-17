@@ -1,12 +1,13 @@
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, StringField, SubmitField, EmailField, IntegerField, SelectField, ColorField
+from wtforms.fields.simple import TextAreaField
 from wtforms.validators import DataRequired, Length, EqualTo, Optional, NumberRange
 
 
 class SettingsForm(FlaskForm):
     change_name = StringField('Изменить имя пользователя', validators=[Optional()])
     change_pass = StringField('Изменить пароль', validators=[Optional()])
-    change_about = StringField('Изменить описание', validators=[Optional()])
+    change_about = TextAreaField('Изменить описание', validators=[Optional()])
     font = SelectField("Шрифт", validators=[Optional()],
                        choices=[('Verdana', 'Verdana'), ('Arial', 'Arial'), ('Calibri', 'Calibri')])
     font_color = ColorField("Цвет шрифта", validators=[Optional()])
