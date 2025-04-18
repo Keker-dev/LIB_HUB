@@ -5,7 +5,7 @@ from data.pages import Page
 from data.comments import Comment
 from data.tags import Tag
 import datetime
-import json
+from json import dumps, loads
 from forms.login import LoginForm
 from forms.book import BookForm
 from forms.page import PageForm
@@ -30,6 +30,7 @@ db_sess = None
 def main_page():
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form, usr = MainPageForm(), None
+    prms = {"title": "LIBHUB", "usr": None, "setts": None, "form": form, "message": None, "search_results": []}
     if all(usr_data):
         usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
                                          User.name == usr_data[2]).first()
@@ -38,6 +39,9 @@ def main_page():
             session.pop("email")
             session.pop("name")
             return redirect(url_for("main_page"))
+        else:
+            prms["usr"] = usr
+            prms["setts"] = loads(usr.settings)
     if form.reg.data:
         return redirect(url_for("register_page"))
     if form.log.data:
@@ -52,12 +56,11 @@ def main_page():
         books = db_sess.query(Book).all()
         books = [i for i in books if form.search.data.lower() in i.name.lower()]
         if books:
-            return render_template("main_page.html", title="LIBHUB", usr=usr, form=form,
-                                   search_results=books)
+            prms["search_results"] = books
         else:
-            return render_template("main_page.html", title="LIBHUB", usr=usr, form=form,
-                                   message="Такой книги не найдено.")
-    return render_template("main_page.html", title="LIBHUB", usr=usr, form=form, debug=True)
+            prms["message"] = "Ничего не найдено."
+    prms["form"] = form
+    return render_template("main_page.html", **prms)
 
 
 @app.route("/register", methods=["POST", "GET"])
@@ -88,7 +91,7 @@ def register_page():
 @app.route("/profile/<name>", methods=["POST", "GET"])
 def profile_page(name):
     global db_sess
-    form, usr, ch_usr = ProfileForm(), None, db_sess.query(User).filter(User.name == name).first()
+    form, usr, ch_usr, setts = ProfileForm(), None, db_sess.query(User).filter(User.name == name).first(), None
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     if form.submit.data and all(usr_data):
         return redirect(url_for("settings_page"))
@@ -104,7 +107,10 @@ def profile_page(name):
             session.pop("email")
             session.pop("name")
             return redirect(url_for("main_page"))
-    return render_template('profile.html', title=f'Профиль {name}', form=form, ch_usr=ch_usr, usr=usr)
+        else:
+            setts = loads(usr.settings)
+    return render_template('profile.html', title=f'Профиль {name}', form=form, ch_usr=ch_usr,
+                           usr=usr, setts=setts)
 
 
 @app.route("/login", methods=["POST", "GET"])
@@ -133,13 +139,16 @@ def add_book_page():
     global db_sess
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     tags = db_sess.query(Tag).all()
-    form = AddBookForm()
+    form, setts, user = AddBookForm(), None, None
     if form.validate_on_submit() and all(usr_data):
         user = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
                                           User.name == usr_data[2]).first()
+        if not user:
+            return redirect(url_for("main_page"))
+        setts = loads(user.settings)
         if db_sess.query(Book).filter(Book.name == form.name.data).first():
             return render_template('add_book.html', title='Добавление книги', form=form,
-                                   message="Книга с таким названием уже есть")
+                                   message="Книга с таким названием уже есть", usr=user, setts=setts)
         tags_id = []
         for i in request.values:
             if "tag_" in i:
@@ -150,15 +159,21 @@ def add_book_page():
         return redirect(url_for("book_page", book_name=form.name.data))
     elif not all(usr_data):
         return redirect(url_for("main_page"))
-    return render_template('add_book.html', title='Добавление книги', form=form, tags=tags)
+    return render_template('add_book.html', title='Добавление книги', form=form, tags=tags,
+                           usr=user, setts=setts)
 
 
 @app.route("/book/<book_name>/add_page", methods=["POST", "GET"])
 def add_page_page(book_name):
     global db_sess
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
-    form = AddPageForm()
+    form, usr, setts = AddPageForm(), None, None
     if form.validate_on_submit() and all(usr_data):
+        usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
+                                         User.name == usr_data[2]).first()
+        if not usr:
+            return redirect(url_for("main_page"))
+        setts = loads(usr.settings)
         book = db_sess.query(Book).filter(Book.author_id == usr_data[0], Book.name == book_name).first()
         page = Page(name=form.name.data, text=form.text.data, number=len(book.pages))
         page.book_id = book.id
@@ -167,7 +182,7 @@ def add_page_page(book_name):
         return redirect(url_for("book_page", book_name=book_name))
     elif not all(usr_data):
         return redirect(url_for("main_page"))
-    return render_template('add_page.html', title='Добавление главы', form=form)
+    return render_template('add_page.html', title='Добавление главы', form=form, usr=usr, setts=setts)
 
 
 @app.route("/book/<book_name>", methods=["POST", "GET"])
@@ -193,6 +208,8 @@ def book_page(book_name):
         "book": book,
         "usr": usr,
     }
+    if usr:
+        prms["setts"] = loads(usr.settings)
     return render_template('book.html', **prms)
 
 
@@ -200,8 +217,13 @@ def book_page(book_name):
 def book_page_page(book_name, page_num):
     global db_sess
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
-    form, page_num = PageForm(), int(page_num)
+    form, page_num, usr = PageForm(), int(page_num), None
     book = db_sess.query(Book).filter(Book.name == book_name).first()
+    if all(usr_data):
+        usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
+                                         User.name == usr_data[2]).first()
+        if not usr:
+            return redirect(url_for("main_page"))
     if not book or not (0 <= page_num < len(book.pages)):
         return redirect(url_for("main_page"))
     page = [pg for pg in book.pages if pg.number == page_num][0]
@@ -220,8 +242,10 @@ def book_page_page(book_name, page_num):
         "book": book,
         "page": page,
         "form": form,
-        "user_id": usr_data[0],
+        "usr": usr,
     }
+    if usr:
+        prms["setts"] = loads(usr.settings)
     return render_template('page.html', **prms)
 
 
@@ -243,7 +267,7 @@ def settings_page():
         "form": form,
         "user_id": usr_data[0],
     }
-    setts = json.loads(usr.settings)
+    setts = loads(usr.settings)
     if form.logout.data:
         session.pop("id")
         session.pop("email")
@@ -279,7 +303,7 @@ def settings_page():
         setts["len-last-seen"] = form.check_books.data
     if form.del_history.data:
         usr.last_books = "[]"
-    usr.settings = json.dumps(setts)
+    usr.settings = dumps(setts)
     db_sess.commit()
     form.change_name.data = usr.name
     form.change_about.data = usr.about
@@ -288,6 +312,7 @@ def settings_page():
     form.font.data = setts["font"]
     form.ignore.data = setts["ignore"]
     form.check_books.data = setts["len-last-seen"]
+    prms["setts"] = setts
     return render_template('settings.html', **prms)
 
 
