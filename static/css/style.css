@@ -85,12 +85,21 @@ body{
 .searchbtn{
     background-color: rgba(0, 0, 0, 0);
     margin-left: 10px;
-    margin-top: 2rem;
+    margin-top: calc(1.5em + .75rem + 2px);
     display:inline-block;
     border-color: #2b1d18;
     border: 2px;
     border-radius: 5px;
     height: calc(1.5em + .75rem + 2px);
+}
+.book-anim{
+    background-image: url("../images/main_images/icon.gif");
+    border-color: transparent;
+    background-color: transparent;
+    background-size: 103% 103%;
+    background-position: 45% 25%;
+    height:40px;
+    width:40px;
 }
 .profile_icon{
     background-image: url("../images/main_images/icon.png");

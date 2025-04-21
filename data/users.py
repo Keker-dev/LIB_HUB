@@ -14,7 +14,7 @@ class User(SqlAlchemyBase):
     email = sqlalchemy.Column(sqlalchemy.String,
                               index=True, unique=True, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    about = sqlalchemy.Column(sqlalchemy.String, default="")
+    about = sqlalchemy.Column(sqlalchemy.String, default="Тут пока ничего нет...")
     reg_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     likes = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     favorite_authors = sqlalchemy.Column(sqlalchemy.String, default="[]")

@@ -16,7 +16,7 @@ from forms.profile import ProfileForm
 from forms.add_book import AddBookForm
 from forms.settings import SettingsForm
 from flask import Flask
-from flask import url_for, request, render_template, redirect, session
+from flask import url_for, request, render_template, redirect, session, jsonify, make_response
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'libhub_secret_key'
@@ -24,6 +24,20 @@ app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(
     days=365
 )
 db_sess = None
+
+
+@app.errorhandler(404)
+def not_found(error):
+    err = {"name": "404",
+           "text": "Упс... Страница не найдена."}
+    return render_template("error.html", error=err)
+
+
+@app.errorhandler(400)
+def bad_request(_):
+    err = {"name": "400",
+           "text": "Упс... Сервер не понял ваш запрос."}
+    return render_template("error.html", error=err)
 
 
 @app.route("/", methods=["POST", "GET"])
@@ -93,6 +107,9 @@ def profile_page(name):
     global db_sess
     form, usr, ch_usr, setts = ProfileForm(), None, db_sess.query(User).filter(User.name == name).first(), None
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
+    print(ch_usr)
+    if not ch_usr:
+        return redirect(url_for("main_page"))
     if form.submit.data and all(usr_data):
         return redirect(url_for("settings_page"))
         session.pop("id")
@@ -168,12 +185,13 @@ def add_page_page(book_name):
     global db_sess
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form, usr, setts = AddPageForm(), None, None
-    if form.validate_on_submit() and all(usr_data):
+    if all(usr_data):
         usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
                                          User.name == usr_data[2]).first()
         if not usr:
             return redirect(url_for("main_page"))
         setts = loads(usr.settings)
+    if form.validate_on_submit() and usr:
         book = db_sess.query(Book).filter(Book.author_id == usr_data[0], Book.name == book_name).first()
         page = Page(name=form.name.data, text=form.text.data, number=len(book.pages))
         page.book_id = book.id
@@ -202,11 +220,13 @@ def book_page(book_name):
             session.pop("id")
             session.pop("email")
             return redirect(url_for("main_page"))
+        book.views = str(sorted(set(eval(book.views) + [usr.id])))
     prms = {
         "form": form,
         "title": f'Книга {book_name}',
         "book": book,
         "usr": usr,
+        "views": len(eval(book.views))
     }
     if usr:
         prms["setts"] = loads(usr.settings)
@@ -224,8 +244,10 @@ def book_page_page(book_name, page_num):
                                          User.name == usr_data[2]).first()
         if not usr:
             return redirect(url_for("main_page"))
-    if not book or not (0 <= page_num < len(book.pages)):
+    if not book:
         return redirect(url_for("main_page"))
+    elif not (0 <= page_num < len(book.pages)):
+        return redirect(url_for("book_page", book_name=book_name))
     page = [pg for pg in book.pages if pg.number == page_num][0]
     if form.next.data:
         return redirect(url_for("book_page_page", book_name=book_name,

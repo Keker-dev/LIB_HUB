@@ -5,10 +5,12 @@
 <form action="" method="post">
     {{ form.hidden_tag() }}
     <h3 class="inv"><a href="/profile/{{ book.author.name }}">Автор: {{ book.author.name }}</a></h3>
+    <p>{{ form.author(type="submit", class="inv-button") }}</p>
     <p>{{ form.read(type="submit", class="btn btn-primary") }}</p>
     {% if usr == book.author %}
         <p>{{ form.add_page(type="submit", class="btn btn-primary") }}</p>
     {% endif %}
+    <p>Просмотры: {{ views }}</p>
     {{ message }}
 </form>
 {% endblock %}
