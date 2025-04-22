@@ -7,9 +7,12 @@
         <p class="alert alert-danger" role="alert">{{ error }}</p>
     {% endfor %}
 {% endmacro %}
-{% if setts %}
+{% if usr %}
 <style>
-p, h1, h2, h3, h4, h5 {font-family: {{ setts["font"] }}; font-size: {{ setts["font-size"] }}px; color: {{ setts["font-color"] }};}
+p, h1, h2, h3, h4, h5, b, i, body, label {font-family: {{ usr.settings["font"] }};
+font-size: {{ usr.settings["font-size"] }}px;
+color: {{ usr.settings["font-color"] }};
+}
 </style>
 {% endif %}
     <head>
@@ -20,6 +23,7 @@ p, h1, h2, h3, h4, h5 {font-family: {{ setts["font"] }}; font-size: {{ setts["fo
               integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
               crossorigin="anonymous">
         <link rel="stylesheet" href="../static/css/style.css">
+        <link rel="icon" type="image/png" href="../static/images/main_images/book.png">
         <title>{{title}}</title>
     </head>
     <body>

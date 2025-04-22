@@ -17,7 +17,7 @@ class SettingsForm(FlaskForm):
                                   ('Никакие', 'Никакие')])
     check_books = IntegerField("Какое кол-во просмотренных работ отслеживать",
                                validators=[Optional(), NumberRange(min=0, max=100)])
-    submit = SubmitField('')
+    submit = SubmitField('Подтвердить изменения')
     logout = SubmitField('Выйти из аккаунта')
     del_acc = SubmitField('Удалить аккаунт')
     del_history = SubmitField('Удалить историю просмотров')

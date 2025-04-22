@@ -7,7 +7,7 @@
 .tabs > div:has(> label:nth-of-type(1) input:checked) + div > div:nth-of-type(1),
 .tabs > div:has(> label:nth-of-type(2) input:checked) + div > div:nth-of-type(2),
 .tabs > div:has(> label:nth-of-type(3) input:checked) + div > div:nth-of-type(3) {display: block;}
-.tab { display: block; height: 50px; width: 150px; border: solid; border-radius: 3px; text-align: center;
+.tab { display: block; height: 4rem; width: 150px; border: solid; border-radius: 3px; text-align: center;
 cursor: pointer; margin-bottom: 0px; border-top: 0px; transition: background-color 0.3s;}
 .tab:nth-of-type(1) { border-top: solid;}
 .tab:has(input[type="radio"]:checked) { border-right: 0px solid #fff; background-color: rgba(255, 255, 255, 0.3);}
@@ -17,6 +17,7 @@ cursor: pointer; margin-bottom: 0px; border-top: 0px; transition: background-col
 #logout {background-color: #d11;}
 #del_acc {background-color: #d11;}
 #font_size {width: 10%;}
+#submit:disabled {transform: scale(1); cursor: not-allowed; border-color: #888; background-color: rgba(0, 0, 0, 0);}
 </style>
 <h1>Настройки</h1>
 <form action="" method="post">
@@ -49,5 +50,6 @@ cursor: pointer; margin-bottom: 0px; border-top: 0px; transition: background-col
         </div>
     </div>
     </div>
+    <p align="middle" style="margin-top: 20px;">{{ form.submit(type="submit", class="btn btn-primary") }}</p>
 </form>
 {% endblock %}
