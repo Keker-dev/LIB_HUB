@@ -41,7 +41,7 @@
         {% endfor %}
     </p>
     <p>Добавить теги</p>
-        <div class="add_tags">
+        <div class="as-text" style="margin-bottom: 20px;">
             {% for tag in tags %}
             <label class="tag_checkbox">
                 <input type="checkbox" name="tag_{{ tag.id }}">
@@ -49,7 +49,7 @@
             </label>
             {% endfor %}
         </div>
-    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    <p align="center bottom">{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     {% if message %}
         <p class="alert alert-danger" role="alert">{{message}}</p>
     {% endif %}

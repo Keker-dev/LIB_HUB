@@ -154,9 +154,6 @@ body{
 .tag{
     text-align: left;
 }
-.add_tags{
-    margin-bottom: 20px;
-}
 .add_tag:hover:after{
     content: attr(data-title); /* Выводим текст */
     position: absolute;/* Абсолютное позиционирование */
@@ -175,15 +172,14 @@ body{
 }
 .tag_checkbox{
     display: block;
-	margin: 0 5px 0 0;
+	margin: 0 5px 5px 0;
 	user-select: none;
 	position: relative;
-	margin-right: 55%;
 }
-.tag_checkbox input[type=checkbox] {
+.tag_checkbox > input {
 	display: none;
 }
-.tag_checkbox span {
+.add_tag {
 	display: inline-block;
 	cursor: pointer;
 	padding: 0px 10px;
@@ -191,9 +187,12 @@ body{
 	border: 2px solid #999;
 	border-radius: 4px;
 	transition: background 0.2s ease;
-	margin-top: 5px;
+	width: 100%;
+	height: 100%;
+	text-align: middle;
+	vertical-align: middle;
 }
-.tag_checkbox input[type=checkbox]:checked + span {
+.tag_checkbox > input:checked + span {
 	background: var(--lib-hub);
 	border: 2px solid blue;
 	border-radius: 4px;
@@ -225,5 +224,12 @@ footer{
     margin-top: 7%;
     text-align: center;
 }
-/* todo: dark_theme bg: 1c1c1c; main_bg: #2d2d2f; hover: 2b1d18; font: white*/
+.as-text {
+  display: flex;
+  flex-wrap: wrap;
+}
+.as-text>* {
+  flex: 1 1 250px;
+}
+
 /* todo: light_theme bg: 413023; main_bg: faf5ea; hover: 2b1d18; font: black*/

@@ -173,7 +173,7 @@ def add_book_page():
         for i in request.values:
             if "tag_" in i:
                 tags_id.append(int(i[4:]))
-        book = Book(name=form.name.data, author_id=user.id, tags=str(sorted(tags_id)))
+        book = Book(name=form.name.data, author_id=user.id, tags=sorted(tags_id))
         db_sess.add(book)
         db_sess.commit()
         return redirect(url_for("book_page", book_name=form.name.data))
@@ -233,6 +233,7 @@ def book_page(book_name):
         "title": f'Книга {book_name}',
         "book": book,
         "usr": usr,
+        "tags": [db_sess.query(Tag).filter(Tag.id == i).first() for i in book.tags]
     }
     db_sess.commit()
     return render_template('book.html', **prms)
