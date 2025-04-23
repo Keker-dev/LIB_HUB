@@ -9,7 +9,7 @@
     {% if usr == book.author %}
         <p>{{ form.add_page(type="submit", class="btn btn-primary") }}</p>
     {% endif %}
-    <p>Просмотры: {{ views }}</p>
+    <p>Просмотры: {{ book.views|length }}</p>
     {{ message }}
 </form>
 {% endblock %}

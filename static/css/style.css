@@ -158,16 +158,20 @@ body{
     margin-bottom: 20px;
 }
 .add_tag:hover:after{
-
     content: attr(data-title); /* Выводим текст */
- /* Абсолютное позиционирование */
-    /* Положение подсказки */
-    z-index: 1; /* Отображаем подсказку поверх других элементов */
-    background: transparent; /* Полупрозрачный цвет фона */
-    font-family: "Verdana", sans-serif; /* Гарнитура шрифта */
-    font-size: 14px; /* Размер текста подсказки */
+    position: absolute;/* Абсолютное позиционирование */
+    top: calc(100% - 0.5rem);
+    z-index: 10; /* Отображаем подсказку поверх других элементов */
+    background-color: var(--main-bg-color);
     padding: 5px 10px; /* Поля */
     margin: 10px;
+    border: 2px solid #999;
+    border-radius: 5px;
+}
+.add_tag:after{
+    color: white;
+    width: 25rem;
+    background-color: var(--main-bg-color);
 }
 .tag_checkbox{
     display: block;
@@ -177,33 +181,23 @@ body{
 	margin-right: 55%;
 }
 .tag_checkbox input[type=checkbox] {
-	z-index: -1;
-	opacity: 0;
-	display: block;
-	width: 0;
-	height: 0;
+	display: none;
 }
 .tag_checkbox span {
 	display: inline-block;
 	cursor: pointer;
 	padding: 0px 10px;
 	line-height: 30px;
-	border: 1px solid #999;
+	border: 2px solid #999;
 	border-radius: 4px;
 	transition: background 0.2s ease;
 	margin-top: 5px;
 }
 .tag_checkbox input[type=checkbox]:checked + span {
 	background: var(--lib-hub);
-	border: 4px solid blue;
+	border: 2px solid blue;
 	border-radius: 4px;
 	color: black;
-	margin-left: 20px;
-}
-.tag_checkbox input[type=checkbox]:active:not(:disabled) + span {
-	background: #2d2d2f;
-	color: #000;
-
 }
 .tag_checkbox:hover {
 	color: #666;

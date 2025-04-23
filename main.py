@@ -179,6 +179,7 @@ def add_book_page():
         return redirect(url_for("book_page", book_name=form.name.data))
     elif not all(usr_data):
         return redirect(url_for("main_page"))
+    form.price.data = 0
     return render_template('add_book.html', title='Добавление книги', form=form, tags=tags, usr=user)
 
 
@@ -232,7 +233,6 @@ def book_page(book_name):
         "title": f'Книга {book_name}',
         "book": book,
         "usr": usr,
-        "views": len(book.views),
     }
     db_sess.commit()
     return render_template('book.html', **prms)
