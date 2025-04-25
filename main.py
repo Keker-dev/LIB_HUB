@@ -1,4 +1,5 @@
 from data.db_session import create_session, global_init
+from sqlalchemy import desc
 from data.users import User
 from data.books import Book
 from data.pages import Page
@@ -57,7 +58,8 @@ def error_page(error):
 def main_page():
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form, usr = MainPageForm(), None
-    prms = {"title": "LIBHUB", "usr": None, "form": form, "message": None, "search_results": []}
+    prms = {"title": "LIBHUB", "usr": None, "form": form, "message": None, "search_results": [], "popular": []}
+    prms["popular"] = db_sess.query(Book).order_by(Book.views).limit(16).all()
     if all(usr_data):
         usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
                                          User.name == usr_data[2]).first()
@@ -120,7 +122,7 @@ def profile_page(name):
     form, usr, ch_usr = ProfileForm(), None, db_sess.query(User).filter(User.name == name).first()
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     if not ch_usr:
-        return redirect(url_for("main_page"))
+        return redirect(url_for("error_page", error="993|К сожалению этот пользователь удалён."))
     if form.submit.data and all(usr_data):
         return redirect(url_for("settings_page"))
     if all(usr_data):
@@ -131,6 +133,11 @@ def profile_page(name):
             session.pop("email")
             session.pop("name")
             return redirect(url_for("main_page"))
+    if form.like.data and usr:
+        if usr.id not in ch_usr.likes:
+            ch_usr.likes = ch_usr.likes + [usr.id]
+            ch_usr.likes_count = len(ch_usr.likes)
+    db_sess.commit()
     return render_template('profile.html', title=f'Профиль {name}', form=form, ch_usr=ch_usr, usr=usr)
 
 
@@ -213,6 +220,8 @@ def book_page(book_name):
     if form.add_page.data and all(usr_data):
         return redirect(url_for("add_page_page", book_name=book_name))
     book = db_sess.query(Book).filter(Book.name == book_name).first()
+    if not book:
+        return redirect(url_for("error_page", error="228|К сожалению такой книги нет."))
     if form.read.data:
         return redirect(url_for("book_page_page", book_name=book_name, page_num=0))
     if all(usr_data):
@@ -222,6 +231,7 @@ def book_page(book_name):
             return redirect(url_for("main_page"))
         if usr.id not in book.views and usr.id != book.author_id:
             book.views = book.views + [usr.id]
+            book.views_count = len(book.views)
     if form.author.data:
         if book.author:
             return redirect(url_for("profile_page", name=book.author.name))
@@ -233,7 +243,7 @@ def book_page(book_name):
         "title": f'Книга {book_name}',
         "book": book,
         "usr": usr,
-        "tags": [db_sess.query(Tag).filter(Tag.id == i).first() for i in book.tags]
+        "tags": db_sess.query(Tag).filter(Tag.id.in_(book.tags)).all(),
     }
     db_sess.commit()
     return render_template('book.html', **prms)

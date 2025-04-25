@@ -7,15 +7,23 @@
     <h3 align="center">О себе</h3><br>
     <p>{{ ch_usr.about }}</p>
     <h3 align="center">Работы</h3>
-    <ul class="book-list">
+    <div class="grid-for-books">
         {% for book in ch_usr.books %}
-            <li class="inv"><a href="/book/{{ book.name }}">{{ book.name }}</a></li>
+        <div class="book_card">
+            <img src="../static/images/main_images/cover.png">
+            <b>{{ book.name }}</b>
+            <p>Автор: {{ book.author.name }}</p>
+            <a href="/book/{{ book.name }}"></a> <!-- Не удалять! Важно -->
+        </div>
         {% endfor %}
-    </ul>
+    </div><br>
     {% if usr.name == ch_usr.name %}
         <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     {% else %}
-        <p>{{ form.like(type="submit", class="btn btn-primary") }}</p>
+    <div class="one-line filled">
+        <label class="like-btn {% if usr.id in ch_usr.likes %}like-btn-checked{% endif %}">{{ form.like(type="submit") }}</label>
+        <p style="margin-right: 20px;">Лайки: {{ ch_usr.likes_count }}</p>
+    </div>
     {% endif %}
     {{ message }}
 </form>

@@ -12,7 +12,7 @@ class Comment(SqlAlchemyBase):
     number = sqlalchemy.Column(sqlalchemy.Integer)
     text = sqlalchemy.Column(sqlalchemy.String)
     reg_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
-    likes = sqlalchemy.Column(sqlalchemy.Integer, default=0)
+    likes = sqlalchemy.Column(sqlalchemy.JSON, default=[])
     page_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("pages.id"))
     page = orm.relationship('Page')
     author_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))

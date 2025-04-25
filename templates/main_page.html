@@ -10,11 +10,27 @@
         </button>
     </div>
     <br>
-    <ul>
+    <div class="grid-for-books">
         {% for book in search_results %}
-        <li class="inv"><a href="/book/{{ book.name }}">{{ book.name }}</a></li>
+        <div class="book_card">
+            <img src="../static/images/main_images/cover.png">
+            <b>{{ book.name }}</b>
+            <p>Автор: {{ book.author.name }}</p>
+            <a href="/book/{{ book.name }}"></a> <!-- Не удалять! Важно -->
+        </div>
         {% endfor %}
-    </ul>
+    </div><br>
+    <h3 align="center">Популярное</h3><br>
+    <div class="grid-for-books">
+        {% for book in popular %}
+        <div class="book_card">
+            <img src="../static/images/main_images/cover.png">
+            <b>{{ book.name }}</b>
+            <p>Автор: {{ book.author.name }}</p>
+            <a href="/book/{{ book.name }}"></a> <!-- Не удалять! Важно -->
+        </div>
+        {% endfor %}
+    </div>
     {% if message %}
         <p class="alert alert-danger" role="alert">{{message}}</p>
     {% endif %}
