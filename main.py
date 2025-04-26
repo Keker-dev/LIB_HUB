@@ -1,4 +1,5 @@
 from data.db_session import create_session, global_init
+from data import books_api, users_api
 from sqlalchemy import desc
 from data.users import User
 from data.books import Book
@@ -355,6 +356,10 @@ def main():
     global db_sess
     global_init("db/main.db")
     db_sess = create_session()
+    app.register_blueprint(books_api.blueprint)
+    app.register_blueprint(users_api.blueprint)
+    books_api.db_sess = create_session()
+    users_api.db_sess = create_session()
     if not db_sess.query(Tag).all():
         tags = [['Фантастика', 'Миры будущего с чудесами технологий и неизведанными галактиками.'],
                 ['Приключения', 'Захватывающие путешествия главных героев, полные неожиданных встреч и испытаний.'],

@@ -2,14 +2,15 @@ import datetime
 import sqlalchemy
 from sqlalchemy import orm
 from .db_session import SqlAlchemyBase
+from sqlalchemy_serializer import SerializerMixin
 
 
-class Book(SqlAlchemyBase):
+class Book(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'books'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
-    name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    name = sqlalchemy.Column(sqlalchemy.String, nullable=True, unique=True)
     pages = orm.relationship("Page", back_populates='book')
     about = sqlalchemy.Column(sqlalchemy.String, default="")
     reg_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
