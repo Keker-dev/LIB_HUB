@@ -1,9 +1,9 @@
 import flask
 from flask import Blueprint, jsonify, make_response, request, session, abort
 from . import db_session
-from .users import User
 from .tags import Tag
 from .users import User
+from .auth import token_auth
 
 blueprint = Blueprint(
     'users_api',
@@ -23,21 +23,17 @@ def get_one_user(user_name):
 
 @blueprint.route('/api/users', methods=['POST'])
 def create_user():
-    usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
-    if all(usr_data):
-        return make_response(jsonify({'error': 'You are already registered.'}), 403)
     if not request.json:
         return make_response(jsonify({'error': 'Empty request'}), 400)
     elif not all(key in request.json for key in ['name', 'about', 'email', "password"]):
         return make_response(jsonify({'error': 'Bad request'}), 400)
     usr = User(name=request.json["name"], about=request.json["about"], email=request.json["email"])
     usr.set_password(request.json["password"])
+    usr.get_token()
     db_sess.add(usr)
     db_sess.commit()
-    session["id"] = usr.id
-    session["email"] = usr.email
-    session["name"] = usr.name
-    return jsonify({"success": True, 'id': usr.id, "name": usr.name})
+    return jsonify({"success": True, 'id': usr.id, "name": usr.name, "token": usr.get_token(),
+                    "token_expiration": usr.token_expiration})
 
 
 @blueprint.route('/api/users/<user_name>/books', methods=['GET'])
@@ -48,29 +44,57 @@ def get_books(user_name):
     return jsonify({"books": [item.to_dict() for item in user.books]})
 
 
+@blueprint.route('/api/users/comments', methods=['GET'])
+@token_auth.login_required
+def get_comments():
+    token = request.headers["Authorization"]
+    if "Bearer" in token:
+        token = token[7:]
+    usr = User.check_token(token)
+    if not usr:
+        return make_response(jsonify({'error': 'User not found or token expired.'}), 403)
+    return jsonify({"comments": [item.to_dict() for item in usr.comments]})
+
+
 @blueprint.route('/api/users', methods=['DELETE'])
+@token_auth.login_required
 def delete_user():
-    usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
-    usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
-                                     User.name == usr_data[2]).first()
-    if not usr or not all(usr_data):
-        return make_response(jsonify({'error': 'You are not registered.'}), 403)
-    session.pop("id")
-    session.pop("email")
-    session.pop("name")
+    token = request.headers["Authorization"]
+    if "Bearer" in token:
+        token = token[7:]
+    usr = User.check_token(token)
+    if not usr:
+        return make_response(jsonify({'error': 'User not found or token expired.'}), 403)
     db_sess.delete(usr)
     db_sess.commit()
     return jsonify({"success": True})
 
 
-@blueprint.route('/api/users/logout')
-def logout_user():
-    usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
-    usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
-                                     User.name == usr_data[2]).first()
-    if not usr or not all(usr_data):
-        return make_response(jsonify({'error': 'You are not registered.'}), 403)
-    session.pop("id")
-    session.pop("email")
-    session.pop("name")
-    return jsonify({"success": True})
+@blueprint.route('/api/users', methods=['PUT'])
+@token_auth.login_required
+def update_user():
+    token = request.headers["Authorization"]
+    if "Bearer" in token:
+        token = token[7:]
+    usr = User.check_token(token)
+    if not usr:
+        return make_response(jsonify({'error': 'User not found or token expired.'}), 403)
+    if not request.json:
+        return make_response(jsonify({'error': 'Empty request'}), 400)
+    if request.json.get("name"):
+        if db_sess.query(User).filter(User.name == request.json.get("name")).first():
+            return make_response(jsonify({'error': 'That name is already taken.'}), 403)
+        usr.name = request.json.get("name")
+    if request.json.get("email"):
+        if db_sess.query(User).filter(User.email == request.json.get("email")).first():
+            return make_response(jsonify({'error': 'That email is already taken.'}), 403)
+        usr.email = request.json.get("email")
+    if request.json.get("about"):
+        usr.about = request.json.get("about")
+    if request.json.get("password"):
+        usr.set_password(request.json.get("password"))
+    if request.json.get("settings"):
+        usr.settings = request.json.get("settings")
+    db_sess.commit()
+    return jsonify({"success": True, 'id': usr.id, "name": usr.name, "token": usr.get_token(),
+                    "token_expiration": usr.token_expiration})

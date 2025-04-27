@@ -1,9 +1,8 @@
 import sqlalchemy
 from .db_session import SqlAlchemyBase
-from sqlalchemy_serializer import SerializerMixin
 
 
-class Tag(SqlAlchemyBase, SerializerMixin):
+class Tag(SqlAlchemyBase):
     __tablename__ = 'tags'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
@@ -13,3 +12,6 @@ class Tag(SqlAlchemyBase, SerializerMixin):
 
     def __repr__(self):
         return f"<Tag> {self.id} {self.name}"
+
+    def to_dict(self):
+        return {"id": self.id, "name": self.name}

@@ -2,10 +2,9 @@ import datetime
 import sqlalchemy
 from sqlalchemy import orm
 from .db_session import SqlAlchemyBase
-from sqlalchemy_serializer import SerializerMixin
 
 
-class Page(SqlAlchemyBase, SerializerMixin):
+class Page(SqlAlchemyBase):
     __tablename__ = 'pages'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
@@ -20,3 +19,7 @@ class Page(SqlAlchemyBase, SerializerMixin):
 
     def __repr__(self):
         return f"<Page> {self.id} {self.name}"
+
+    def to_dict(self):
+        return {"name": self.name, "reg_date": self.reg_date, "comments": len(self.comments), "book": self.book.name,
+                "number": self.number, "text": self.text}

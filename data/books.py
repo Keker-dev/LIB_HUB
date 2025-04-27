@@ -2,10 +2,9 @@ import datetime
 import sqlalchemy
 from sqlalchemy import orm
 from .db_session import SqlAlchemyBase
-from sqlalchemy_serializer import SerializerMixin
 
 
-class Book(SqlAlchemyBase, SerializerMixin):
+class Book(SqlAlchemyBase):
     __tablename__ = 'books'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
@@ -25,3 +24,7 @@ class Book(SqlAlchemyBase, SerializerMixin):
 
     def __repr__(self):
         return f"<Book> {self.id} {self.name}"
+
+    def to_dict(self):
+        return {"name": self.name, "pages": len(self.pages), "about": self.about, "reg_date": self.reg_date,
+                "likes": self.likes_count, "views": self.views_count, "tags": self.tags, "author": self.author.name}

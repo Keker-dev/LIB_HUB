@@ -2,10 +2,9 @@ import datetime
 import sqlalchemy
 from sqlalchemy import orm
 from .db_session import SqlAlchemyBase
-from sqlalchemy_serializer import SerializerMixin
 
 
-class Comment(SqlAlchemyBase, SerializerMixin):
+class Comment(SqlAlchemyBase):
     __tablename__ = 'comms'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
@@ -13,6 +12,7 @@ class Comment(SqlAlchemyBase, SerializerMixin):
     number = sqlalchemy.Column(sqlalchemy.Integer)
     text = sqlalchemy.Column(sqlalchemy.String)
     reg_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+    likes_count = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     likes = sqlalchemy.Column(sqlalchemy.JSON, default=[])
     page_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("pages.id"))
     page = orm.relationship('Page')
@@ -21,3 +21,7 @@ class Comment(SqlAlchemyBase, SerializerMixin):
 
     def __repr__(self):
         return f"<Comment> {self.id} {self.author_id} {self.text}"
+
+    def to_dict(self):
+        return {"number": self.number, "text": self.text, "reg_date": self.reg_date, "likes": self.likes_count,
+                "page": self.page.number, "author": self.author.name}

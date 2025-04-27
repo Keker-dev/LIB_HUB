@@ -1,4 +1,4 @@
-from data.db_session import create_session, global_init
+from data.session_db import db_sess
 from data import books_api, users_api
 from sqlalchemy import desc
 from data.users import User
@@ -24,7 +24,6 @@ app.config['SECRET_KEY'] = 'libhub_secret_key'
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(
     days=365
 )
-db_sess = None
 
 
 @app.errorhandler(404)
@@ -354,12 +353,8 @@ def settings_page():
 
 def main():
     global db_sess
-    global_init("db/main.db")
-    db_sess = create_session()
     app.register_blueprint(books_api.blueprint)
     app.register_blueprint(users_api.blueprint)
-    books_api.db_sess = create_session()
-    users_api.db_sess = create_session()
     if not db_sess.query(Tag).all():
         tags = [['Фантастика', 'Миры будущего с чудесами технологий и неизведанными галактиками.'],
                 ['Приключения', 'Захватывающие путешествия главных героев, полные неожиданных встреч и испытаний.'],
