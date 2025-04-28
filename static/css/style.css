@@ -290,5 +290,22 @@ footer{
 .like-btn:hover {
     transform: scale(1.05);
 }
+.tab-content, .tab input {display: none;}
+.tabs > div:has(> label:nth-of-type(1) input:checked) + div > div:nth-of-type(1),
+.tabs > div:has(> label:nth-of-type(2) input:checked) + div > div:nth-of-type(2),
+.tabs > div:has(> label:nth-of-type(3) input:checked) + div > div:nth-of-type(3),
+.tabs > div:has(> label:nth-of-type(4) input:checked) + div > div:nth-of-type(4) {display: block;}
+.tab { display: block; height: 4rem; width: 150px; border: solid; text-align: center;
+cursor: pointer; margin-bottom: 0px; border-top: 0px; border-right: 0px; transition: background-color 0.3s; }
+.tab:nth-of-type(1) { border-top: solid; border-top-left-radius: 3px; }
+.tab:nth-of-type(4) { border-bottom-left-radius: 3px; }
+.tab:has(input[type="radio"]:checked) { border-right: 0px solid #fff; background-color: rgba(255, 255, 255, 0.3);}
+.tab:hover {background-color: rgba(255, 255, 255, 0.2);}
+.tab-content {border: 3px solid #fff; border-radius: 3px; border-top-left-radius: 0px; padding: 10px; min-height: 16rem;}
+#change_about {height: 300px;}
+#logout {background-color: #d11;}
+#del_acc {background-color: #d11;}
+#font_size {width: 10%;}
+#submit:disabled {transform: scale(1); cursor: not-allowed; border-color: #888; background-color: rgba(0, 0, 0, 0);}
 
 /* todo: light_theme bg: 413023; main_bg: faf5ea; hover: 2b1d18; font: black*/

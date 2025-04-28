@@ -1,10 +1,12 @@
 import flask
 from flask import Blueprint, jsonify, make_response, request, session, abort
 from . import db_session
+from .session_db import db_sess
 from .books import Book
 from .comments import Comment
 from .tags import Tag
 from .users import User
+from .tokens import Token
 from .pages import Page
 from .auth import token_auth
 
@@ -13,7 +15,6 @@ blueprint = Blueprint(
     __name__,
     template_folder='templates'
 )
-db_sess = None
 
 
 @blueprint.route('/api/books')
@@ -22,7 +23,7 @@ def get_books():
     token = request.headers["Authorization"]
     if "Bearer" in token:
         token = token[7:]
-    usr = User.check_token(token)
+    usr = Token.get_user(token)
     if not usr:
         return make_response(jsonify({'error': 'User not found or token expired.'}), 403)
     books = db_sess.query(Book).all()
@@ -43,7 +44,7 @@ def create_book():
     token = request.headers["Authorization"]
     if "Bearer" in token:
         token = token[7:]
-    usr = User.check_token(token)
+    usr = Token.get_user(token)
     if not usr:
         return make_response(jsonify({'error': 'User not found or token expired.'}), 403)
     if not request.json:
@@ -83,7 +84,7 @@ def get_page_comments(book_name, num):
     token = request.headers["Authorization"]
     if "Bearer" in token:
         token = token[7:]
-    usr = User.check_token(token)
+    usr = Token.get_user(token)
     if not usr:
         return make_response(jsonify({'error': 'User not found or token expired.'}), 403)
     book = db_sess.query(Book).filter(Book.name == book_name).first()
@@ -101,7 +102,7 @@ def create_page_comment(book_name, num):
     token = request.headers["Authorization"]
     if "Bearer" in token:
         token = token[7:]
-    usr = User.check_token(token)
+    usr = Token.get_user(token)
     if not usr:
         return make_response(jsonify({'error': 'User not found or token expired.'}), 403)
     book = db_sess.query(Book).filter(Book.name == book_name).first()
@@ -126,7 +127,7 @@ def create_page(book_name):
     token = request.headers["Authorization"]
     if "Bearer" in token:
         token = token[7:]
-    usr = User.check_token(token)
+    usr = Token.get_user(token)
     if not usr:
         return make_response(jsonify({'error': 'User not found or token expired.'}), 403)
     book = db_sess.query(Book).filter(Book.name == book_name).first()

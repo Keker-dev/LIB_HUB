@@ -4,6 +4,7 @@ from sqlalchemy import desc
 from data.users import User
 from data.books import Book
 from data.pages import Page
+from data.tokens import Token
 from data.comments import Comment
 from data.tags import Tag
 import datetime
@@ -58,8 +59,8 @@ def error_page(error):
 def main_page():
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form, usr = MainPageForm(), None
-    prms = {"title": "LIBHUB", "usr": None, "form": form, "message": None, "search_results": [], "popular": []}
-    prms["popular"] = db_sess.query(Book).order_by(Book.views).limit(16).all()
+    prms = {"title": "LIBHUB", "usr": None, "form": form, "message": None, "search_results": [],
+            "popular": db_sess.query(Book).order_by(Book.views).limit(16).all()}
     if all(usr_data):
         usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
                                          User.name == usr_data[2]).first()
@@ -93,7 +94,6 @@ def main_page():
 
 @app.route("/register", methods=["POST", "GET"])
 def register_page():
-    global db_sess
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form = RegisterForm()
     if form.validate_on_submit():
@@ -118,7 +118,6 @@ def register_page():
 
 @app.route("/profile/<name>", methods=["POST", "GET"])
 def profile_page(name):
-    global db_sess
     form, usr, ch_usr = ProfileForm(), None, db_sess.query(User).filter(User.name == name).first()
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     if not ch_usr:
@@ -143,7 +142,6 @@ def profile_page(name):
 
 @app.route("/login", methods=["POST", "GET"])
 def login_page():
-    global db_sess
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form = LoginForm()
     if form.validate_on_submit() and not all(usr_data):
@@ -164,7 +162,6 @@ def login_page():
 
 @app.route("/add_book", methods=["POST", "GET"])
 def add_book_page():
-    global db_sess
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     tags = db_sess.query(Tag).all()
     form, user = AddBookForm(), None
@@ -180,7 +177,7 @@ def add_book_page():
         for i in request.values:
             if "tag_" in i:
                 tags_id.append(int(i[4:]))
-        book = Book(name=form.name.data, author_id=user.id, tags=sorted(tags_id))
+        book = Book(name=form.name.data, author_id=user.id, tags=sorted(tags_id), about=form.about.data)
         db_sess.add(book)
         db_sess.commit()
         return redirect(url_for("book_page", book_name=form.name.data))
@@ -192,7 +189,6 @@ def add_book_page():
 
 @app.route("/book/<book_name>/add_page", methods=["POST", "GET"])
 def add_page_page(book_name):
-    global db_sess
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form, usr = AddPageForm(), None
     if all(usr_data):
@@ -214,7 +210,6 @@ def add_page_page(book_name):
 
 @app.route("/book/<book_name>", methods=["POST", "GET"])
 def book_page(book_name):
-    global db_sess
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form, usr = BookForm(), None
     if form.add_page.data and all(usr_data):
@@ -251,7 +246,6 @@ def book_page(book_name):
 
 @app.route("/book/<book_name>/page/<page_num>", methods=["POST", "GET"])
 def book_page_page(book_name, page_num):
-    global db_sess
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form, page_num, usr = PageForm(), int(page_num), None
     book = db_sess.query(Book).filter(Book.name == book_name).first()
@@ -287,9 +281,9 @@ def book_page_page(book_name, page_num):
 
 @app.route("/settings", methods=["POST", "GET"])
 def settings_page():
-    global db_sess
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form, usr = SettingsForm(), None
+    form.tabs_class.default = session.get("tabs_id", "1")
     if all(usr_data):
         usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
                                          User.name == usr_data[2]).first()
@@ -339,6 +333,16 @@ def settings_page():
         setts["len-last-seen"] = form.check_books.data
     if form.del_history.data:
         usr.last_books = []
+    if form.add_token.data:
+        token = Token(user_id=usr.id)
+        token.get_token()
+        db_sess.add(token)
+    if form.validate_on_submit():
+        for i in request.form.keys():
+            if "rem_token_" in i:
+                token = db_sess.query(Token).get(i[10:])
+                if token:
+                    db_sess.delete(token)
     usr.settings = setts
     db_sess.commit()
     form.change_name.data = usr.name
@@ -348,11 +352,11 @@ def settings_page():
     form.font.data = usr.settings["font"]
     form.ignore.data = usr.settings["ignore"]
     form.check_books.data = usr.settings["len-last-seen"]
+    session["tabs_id"] = form.tabs_class.data
     return render_template('settings.html', **prms)
 
 
 def main():
-    global db_sess
     app.register_blueprint(books_api.blueprint)
     app.register_blueprint(users_api.blueprint)
     if not db_sess.query(Tag).all():

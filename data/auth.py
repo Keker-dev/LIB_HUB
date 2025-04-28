@@ -1,6 +1,7 @@
 from flask import g, make_response, jsonify
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from .users import User
+from .tokens import Token
 
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth()
@@ -8,7 +9,7 @@ token_auth = HTTPTokenAuth()
 
 @token_auth.verify_token
 def verify_token(token):
-    g.current_user = User.check_token(token) if token else None
+    g.current_user = Token.get_user(token) if token else None
     return g.current_user is not None
 
 

@@ -1,8 +1,9 @@
 import flask
 from flask import Blueprint, jsonify, make_response, request, session, abort
-from . import db_session
+from .session_db import db_sess
 from .tags import Tag
 from .users import User
+from .tokens import Token
 from .auth import token_auth
 
 blueprint = Blueprint(
@@ -10,7 +11,6 @@ blueprint = Blueprint(
     __name__,
     template_folder='templates'
 )
-db_sess = None
 
 
 @blueprint.route('/api/users/<user_name>', methods=['GET'])
@@ -29,11 +29,13 @@ def create_user():
         return make_response(jsonify({'error': 'Bad request'}), 400)
     usr = User(name=request.json["name"], about=request.json["about"], email=request.json["email"])
     usr.set_password(request.json["password"])
-    usr.get_token()
+    token = Token(user_id=usr.id)
+    token.get_token()
     db_sess.add(usr)
+    db_sess.add(token)
     db_sess.commit()
-    return jsonify({"success": True, 'id': usr.id, "name": usr.name, "token": usr.get_token(),
-                    "token_expiration": usr.token_expiration})
+    return jsonify({"success": True, 'id': usr.id, "name": usr.name, "token": token.token,
+                    "token_expiration": token.expiration})
 
 
 @blueprint.route('/api/users/<user_name>/books', methods=['GET'])
@@ -50,7 +52,7 @@ def get_comments():
     token = request.headers["Authorization"]
     if "Bearer" in token:
         token = token[7:]
-    usr = User.check_token(token)
+    usr = Token.get_user(token)
     if not usr:
         return make_response(jsonify({'error': 'User not found or token expired.'}), 403)
     return jsonify({"comments": [item.to_dict() for item in usr.comments]})
@@ -62,7 +64,7 @@ def delete_user():
     token = request.headers["Authorization"]
     if "Bearer" in token:
         token = token[7:]
-    usr = User.check_token(token)
+    usr = Token.get_user(token)
     if not usr:
         return make_response(jsonify({'error': 'User not found or token expired.'}), 403)
     db_sess.delete(usr)
@@ -76,7 +78,7 @@ def update_user():
     token = request.headers["Authorization"]
     if "Bearer" in token:
         token = token[7:]
-    usr = User.check_token(token)
+    usr = Token.get_user(token)
     if not usr:
         return make_response(jsonify({'error': 'User not found or token expired.'}), 403)
     if not request.json:
@@ -96,5 +98,4 @@ def update_user():
     if request.json.get("settings"):
         usr.settings = request.json.get("settings")
     db_sess.commit()
-    return jsonify({"success": True, 'id': usr.id, "name": usr.name, "token": usr.get_token(),
-                    "token_expiration": usr.token_expiration})
+    return jsonify({"success": True, 'id': usr.id})

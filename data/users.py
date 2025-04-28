@@ -28,32 +28,7 @@ class User(SqlAlchemyBase, SerializerMixin):
                                           "len-last-seen": 100})
     books = orm.relationship("Book", back_populates='author')
     comments = orm.relationship("Comment", back_populates='author')
-    # Токен
-    token = sqlalchemy.Column(sqlalchemy.String(32), unique=True)
-    token_expiration = sqlalchemy.Column(sqlalchemy.DateTime)
-
-    def get_token(self, expires_in=31536000):
-        now = datetime.now()
-        if self.token and self.token_expiration > now + timedelta(seconds=60):
-            return self.token
-        self.token = base64.b64encode(os.urandom(24)).decode('utf-8')
-        self.token_expiration = now + timedelta(seconds=expires_in)
-        return self.token
-
-    def revoke_token(self):
-        self.token_expiration = datetime.now() - timedelta(seconds=1)
-
-    @staticmethod
-    def check_token(token):
-        sess = create_session()
-        user = sess.query(User).filter(User.token == token).first()
-        if user is None or user.token_expiration < datetime.now():
-            return None
-        return user
-
-    @staticmethod
-    def generate_token():
-        return base64.b64encode(os.urandom(24)).decode('utf-8'), datetime.now() + timedelta(seconds=31536000)
+    tokens = orm.relationship("Token", back_populates='user')
 
     def __repr__(self):
         return f"<User> {self.id} {self.name}"

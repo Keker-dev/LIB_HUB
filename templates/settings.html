@@ -1,54 +1,73 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- todo: Сделать вкладки красивыми -->
 <style>
-.tab-content, .tab input {display: none;}
-.tabs > div:has(> label:nth-of-type(1) input:checked) + div > div:nth-of-type(1),
-.tabs > div:has(> label:nth-of-type(2) input:checked) + div > div:nth-of-type(2),
-.tabs > div:has(> label:nth-of-type(3) input:checked) + div > div:nth-of-type(3) {display: block;}
-.tab { display: block; height: 4rem; width: 150px; border: solid; border-radius: 3px; text-align: center;
-cursor: pointer; margin-bottom: 0px; border-top: 0px; transition: background-color 0.3s;}
-.tab:nth-of-type(1) { border-top: solid;}
-.tab:has(input[type="radio"]:checked) { border-right: 0px solid #fff; background-color: rgba(255, 255, 255, 0.3);}
-.tab:hover {background-color: rgba(255, 255, 255, 0.2);}
-.tab-content {border: 3px solid #000; border-left: 0px; border-radius: 3px; padding: 10px;}
-#change_about {height: 300px;}
-#logout {background-color: #d11;}
-#del_acc {background-color: #d11;}
-#font_size {width: 10%;}
-#submit:disabled {transform: scale(1); cursor: not-allowed; border-color: #888; background-color: rgba(0, 0, 0, 0);}
+.list-items {
+    border: solid; border-radius: 4px;
+    .list-head { flex-direction: row; border-bottom: solid; }
+    p { vertical-align: middle; margin: 10px 20px; }
+    label { margin: 10px 20px; padding-top: 0px; padding-bottom: 0px; }
+    .list_item { flex-direction: row; }
+    .list-item:hover { background-color: rgba(255, 255, 255, 0.2); }
+    .list-item > label {opacity: 0;}
+    .list-item:hover > label {opacity: 100;}
+}
+.tab > input{ }
 </style>
-<h1>Настройки</h1>
+<h1 align="center">Настройки</h1><br>
 <form action="" method="post">
     {{ form.hidden_tag() }}
     <div class="tabs one-line filled" style="flex-direction: row;">
-    <div>
-        <label class="tab"><input type="radio" name="tabs_class" checked="checked"/>Настройки аккаунта</label>
-        <label class="tab"><input type="radio" name="tabs_class"/>Настройки оформления</label>
-        <label class="tab"><input type="radio" name="tabs_class"/>Дополнительно</label>
-    </div>
-    <div style="flex-grow: 1;">
-        <div class="tab-content">
-            <p>{{ render_field(form.change_name) }}</p>
-            <p>{{ render_field(form.change_pass, type="password") }}</p>
-            <!-- todo: сделать вводимый текст сверху большого поля id="change_about" -->
-            <p>{{ render_field(form.change_about) }}</p>
-            <p style="display: none;">{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-            <p>{{ form.logout(type="submit", class="btn btn-primary") }}</p>
-            <p>{{ form.del_acc(type="submit", class="btn btn-primary") }}</p>
+        <div>
+            {% for subfield in form.tabs_class %}
+                <label class="tab">{{ subfield(style="display: none;") }}{{ subfield.label.text }}</label>
+            {% endfor %}
         </div>
-        <div class="tab-content">
-            <p>{{ render_field(form.font) }}</p>
-            <p>{{ render_field(form.font_size, type="number") }}</p>
-            <p>{{ render_field(form.font_color, type="color") }}</p>
+        <div style="flex-grow: 1;">
+            <div class="tab-content">
+                <p>{{ render_field(form.change_name) }}</p>
+                <p>{{ render_field(form.change_pass, type="password") }}</p>
+                <!-- todo: сделать вводимый текст сверху большого поля id="change_about" -->
+                <p>{{ render_field(form.change_about) }}</p>
+                <p style="display: none;">{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+                <p>{{ form.logout(type="submit", class="btn btn-primary") }}</p>
+                <p>{{ form.del_acc(type="submit", class="btn btn-primary") }}</p>
+            </div>
+            <div class="tab-content">
+                <p>{{ render_field(form.font) }}</p>
+                <p>{{ render_field(form.font_size, type="number") }}</p>
+                <p>{{ render_field(form.font_color, type="color") }}</p>
+            </div>
+            <div class="tab-content">
+                <div class="list-items">
+                    <div class="one-line filled list-head">
+                        <p style="flex-grow: 1;">Мои токены</p>
+                        <p>Срок действия</p>
+                    </div>
+                    {% for tk in usr.tokens %}
+                        <div class="one-line filled list-item">
+                            <p style="flex-grow: 1;">{{ tk.token }}</p>
+                            <p style="margin-right: 20px;">{{ tk.expiration }}</p>
+                            <label class="btn btn-primary">
+                                <input type="submit" name="rem_token_{{ tk.token }}" style="display: none;">-
+                            </label>
+                        </div>
+                    {% endfor %}
+                    {% if not usr.tokens %}
+                        <div class="one-line filled list-item">
+                            <p style="flex-grow: 1;">У вас пока нет токенов.</p>
+                        </div>
+                    {% endif %}
+                </div>
+                <p align="center" style="margin-top: 2rem;">{{ form.add_token(type="submit", class="btn btn-primary") }}
+                </p>
+            </div>
+            <div class="tab-content">
+                <p>{{ render_field(form.ignore) }}</p>
+                <p>{{ render_field(form.check_books, type="number") }}</p>
+                <p>{{ form.del_history(type="submit", class="btn btn-primary") }}</p>
+            </div>
         </div>
-        <div class="tab-content">
-            <p>{{ render_field(form.ignore) }}</p>
-            <p>{{ render_field(form.check_books, type="number") }}</p>
-            <p>{{ form.del_history(type="submit", class="btn btn-primary") }}</p>
-        </div>
-    </div>
     </div>
     <p align="middle" style="margin-top: 20px;">{{ form.submit(type="submit", class="btn btn-primary") }}</p>
 </form>
