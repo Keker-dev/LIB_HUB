@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 align="center">Кабинет читателя</h1><br>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <div class="tabs one-line filled" style="flex-direction: row;">
+        <div>
+            {% for subfield in form.tabs_class %}
+                <label class="tab">{{ subfield(style="display: none;") }}{{ subfield.label.text }}</label>
+            {% endfor %}
+        </div>
+        <div style="flex-grow: 1;">
+            <div class="tab-content">
+                У вас нет уведомлений.
+            </div>
+            <div class="tab-content">
+                <div class="grid-for-books" style="grid-template-columns: 1fr 1fr;">
+                    {% for book in last_books %}
+                    <div class="book_card">
+                        <img src="../static/images/main_images/cover.png">
+                        <b>{{ book.name }}</b>
+                        <p>Автор: {{ book.author.name }}</p>
+                        <a href="/book/{{ book.name }}"></a> <!-- Не удалять! Важно -->
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="tab-content">
+            </div>
+            <div class="tab-content">
+            </div>
+        </div>
+    </div>
+    {{ message }}
+</form>
+{% endblock %}

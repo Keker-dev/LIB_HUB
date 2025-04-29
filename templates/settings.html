@@ -1,19 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<style>
-.list-items {
-    border: solid; border-radius: 4px;
-    .list-head { flex-direction: row; border-bottom: solid; }
-    p { vertical-align: middle; margin: 10px 20px; }
-    label { margin: 10px 20px; padding-top: 0px; padding-bottom: 0px; }
-    .list_item { flex-direction: row; }
-    .list-item:hover { background-color: rgba(255, 255, 255, 0.2); }
-    .list-item > label {opacity: 0;}
-    .list-item:hover > label {opacity: 100;}
-}
-.tab > input{ }
-</style>
 <h1 align="center">Настройки</h1><br>
 <form action="" method="post">
     {{ form.hidden_tag() }}

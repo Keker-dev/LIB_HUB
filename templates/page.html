@@ -29,9 +29,14 @@
             <p style="color: #888888">{{ comm.reg_date }}</p>
         </div>
         <p style="margin-left: 20px">{{ comm.text }}</p>
-        {% if comm.author_id != usr.id %}
-        <p align="center">{{ form.like(type="submit", class="btn btn-primary") }}</p>
-        {% endif %}
+        <div class="one-line">
+            {% if comm.author_id != usr.id %}
+            <label class="like-btn {% if usr.id in comm.likes %}like-btn-checked{% endif %}">
+                {{ form.like(type="submit", value=comm.id) }}
+            </label>
+            {% endif %}
+            <h4 style="margin: 10px 0px 10px 10px;">{{ comm.likes_count }}</h4>
+        </div>
     </div><br>
     {% endfor %}
     {{ message }}

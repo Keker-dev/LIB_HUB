@@ -24,6 +24,9 @@
         <label class="like-btn {% if usr.id in ch_usr.likes %}like-btn-checked{% endif %}">{{ form.like(type="submit") }}</label>
         <p style="margin-right: 20px;">Лайки: {{ ch_usr.likes_count }}</p>
     </div>
+    <label class="{% if usr.id in ch_usr.likes %}like-btn-checked{% endif %} btn btn-primary" style="width: auto;">
+        {{ form.like(type="submit", style="display: none;") }}В любимое
+    </label>
     {% endif %}
     {{ message }}
 </form>

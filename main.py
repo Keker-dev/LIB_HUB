@@ -1,6 +1,7 @@
 from data.session_db import db_sess
 from data import books_api, users_api
 from sqlalchemy import desc
+from sqlalchemy.sql.expression import case
 from data.users import User
 from data.books import Book
 from data.pages import Page
@@ -17,6 +18,7 @@ from forms.main_page import MainPageForm
 from forms.profile import ProfileForm
 from forms.add_book import AddBookForm
 from forms.settings import SettingsForm
+from forms.reader import ReaderForm
 from flask import Flask
 from flask import url_for, request, render_template, redirect, session, jsonify, make_response, abort
 
@@ -81,6 +83,8 @@ def main_page():
         return redirect(url_for("settings_page"))
     if form.add_book.data:
         return redirect(url_for("add_book_page"))
+    if form.read_cab.data:
+        return redirect(url_for("reader_cabinet_page"))
     if request.method == "POST" and request.form["searchbtn"]:
         books = db_sess.query(Book).all()
         books = [i for i in books if form.search.data.lower() in i.name.lower()]
@@ -135,7 +139,11 @@ def profile_page(name):
     if form.like.data and usr:
         if usr.id not in ch_usr.likes:
             ch_usr.likes = ch_usr.likes + [usr.id]
-            ch_usr.likes_count = len(ch_usr.likes)
+        else:
+            lks = ch_usr.likes.copy()
+            lks.remove(usr.id)
+            ch_usr.likes = lks
+        ch_usr.likes_count = len(ch_usr.likes)
     db_sess.commit()
     return render_template('profile.html', title=f'Профиль {name}', form=form, ch_usr=ch_usr, usr=usr)
 
@@ -227,6 +235,13 @@ def book_page(book_name):
         if usr.id not in book.views and usr.id != book.author_id:
             book.views = book.views + [usr.id]
             book.views_count = len(book.views)
+        if book.id not in usr.last_books and book.author_id != usr.id:
+            if len(usr.last_books) < usr.settings["len-last-seen"]:
+                usr.last_books = usr.last_books + [book.id]
+            else:
+                lst = usr.last_books.copy()
+                lst.pop(0)
+                usr.last_books = lst + [book.id]
     if form.author.data:
         if book.author:
             return redirect(url_for("profile_page", name=book.author.name))
@@ -269,6 +284,15 @@ def book_page_page(book_name, page_num):
         comm = Comment(text=form.comm_field.data, author_id=usr_data[0], page_id=page.id, number=len(page.comments))
         db_sess.add(comm)
         db_sess.commit()
+    if form.like.data and usr:
+        com = db_sess.query(Comment).get(int(form.like.data))
+        if usr.id not in com.likes:
+            com.likes = com.likes + [usr.id]
+        else:
+            lks = com.likes.copy()
+            lks.remove(usr.id)
+            com.likes = lks
+        com.likes_count = len(com.likes)
     prms = {
         "title": f'Книга {book_name}',
         "book": book,
@@ -283,14 +307,11 @@ def book_page_page(book_name, page_num):
 def settings_page():
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
     form, usr = SettingsForm(), None
-    form.tabs_class.default = session.get("tabs_id", "1")
+    form.tabs_class.default = session.get("setts_tabs_id", "1")
     if all(usr_data):
         usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
                                          User.name == usr_data[2]).first()
         if not usr:
-            session.pop("id")
-            session.pop("email")
-            session.pop("name")
             return redirect(url_for("main_page"))
     prms = {
         "title": f'Настройки',
@@ -334,9 +355,12 @@ def settings_page():
     if form.del_history.data:
         usr.last_books = []
     if form.add_token.data:
-        token = Token(user_id=usr.id)
-        token.get_token()
-        db_sess.add(token)
+        if len(usr.tokens) > 10:
+            prms["message"] = "Максимум 10 токенов!"
+        else:
+            token = Token(user_id=usr.id)
+            token.get_token()
+            db_sess.add(token)
     if form.validate_on_submit():
         for i in request.form.keys():
             if "rem_token_" in i:
@@ -352,8 +376,28 @@ def settings_page():
     form.font.data = usr.settings["font"]
     form.ignore.data = usr.settings["ignore"]
     form.check_books.data = usr.settings["len-last-seen"]
-    session["tabs_id"] = form.tabs_class.data
+    session["setts_tabs_id"] = form.tabs_class.data
     return render_template('settings.html', **prms)
+
+
+@app.route("/reader", methods=["POST", "GET"])
+def reader_cabinet_page():
+    usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
+    form, usr = ReaderForm(), None
+    form.tabs_class.default = session.get("reader_tabs_id", "1")
+    if all(usr_data):
+        usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
+                                         User.name == usr_data[2]).first()
+        if not usr:
+            return redirect(url_for("main_page"))
+    prms = {
+        "title": f'Кабинет читателя',
+        "form": form,
+        "usr": usr,
+        "last_books": [db_sess.query(Book).get(i) for i in usr.last_books[::-1]],
+    }
+    session["reader_tabs_id"] = form.tabs_class.data
+    return render_template('reader.html', **prms)
 
 
 def main():

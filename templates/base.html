@@ -28,12 +28,12 @@ color: {{ usr.settings["font-color"] }};
     </head>
     <body>
         <!-- Begin page content -->
-        <header class="navigation">
-            <h1 class="inv header_block"><a href="/">LITHUB</a></h1>
+        <header class="navigation one-line filled">
+            <h1 class="inv header_block"><a href="/">LITHUB</a>
             <a href="/" style="user-select: none;">
                <img src="/../static/images/main_images/book.png" width="50" class="header_block book">
-            </a>
-            <div class="profile header_block">
+            </a></h1>
+            <div class="header_block" align="right" style="margin: 35px 40px auto auto;">
                 {% block reg %}{% endblock %}
             </div>
         </header>
