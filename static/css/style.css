@@ -290,5 +290,16 @@ footer{
 .like-btn:hover {
     transform: scale(1.05);
 }
-
+.book_image{
+    position: absolute;
+    margin-left: 800px;
+    border-radius: 10px;
+}
+.tags_book{
+    margin-right: 60%;
+    margin-bottom: 50px;
+}
+.about_book{
+    margin-bottom: 15%;
+}
 /* todo: light_theme bg: 413023; main_bg: faf5ea; hover: 2b1d18; font: black*/

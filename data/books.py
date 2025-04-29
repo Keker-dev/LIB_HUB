@@ -21,6 +21,7 @@ class Book(SqlAlchemyBase):
     tags = sqlalchemy.Column(sqlalchemy.JSON, default=[])
     author_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
     author = orm.relationship('User')
+    image = sqlalchemy.Column(sqlalchemy.Text, default=0)
 
     def __repr__(self):
         return f"<Book> {self.id} {self.name}"

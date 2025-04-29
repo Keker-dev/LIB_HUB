@@ -22,8 +22,8 @@ color: {{ usr.settings["font-color"] }};
               href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
               integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
               crossorigin="anonymous">
-        <link rel="stylesheet" href="../static/css/style.css">
-        <link rel="icon" type="image/png" href="../static/images/main_images/book.png">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+        <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/main_images/icon.png')}}">
         <title>{{title}}</title>
     </head>
     <body>
@@ -31,7 +31,7 @@ color: {{ usr.settings["font-color"] }};
         <header class="navigation">
             <h1 class="inv header_block"><a href="/">LITHUB</a></h1>
             <a href="/" style="user-select: none;">
-               <img src="../static/images/main_images/book.png" width="50" class="header_block book">
+               <img src="{{ url_for('static', filename='images/main_images/book.png')}}" width="50" class="header_block book">
             </a>
             <div class="profile header_block">
                 {% block reg %}{% endblock %}

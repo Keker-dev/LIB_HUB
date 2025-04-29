@@ -1,3 +1,6 @@
+import base64
+from encodings.utf_7 import encode
+
 from data.db_session import create_session, global_init
 from sqlalchemy import desc
 from data.users import User
@@ -180,7 +183,14 @@ def add_book_page():
         for i in request.values:
             if "tag_" in i:
                 tags_id.append(int(i[4:]))
-        book = Book(name=form.name.data, author_id=user.id, tags=sorted(tags_id))
+        encoded_photo = ""
+        if form.photo.data:
+            photo = form.photo.data
+            encoded_photo = base64.b64encode(photo.read())
+            encoded_photo = encoded_photo.decode("utf-8")
+
+        book = Book(name=form.name.data, author_id=user.id, tags=sorted(tags_id), image=encoded_photo)
+
         db_sess.add(book)
         db_sess.commit()
         return redirect(url_for("book_page", book_name=form.name.data))
@@ -238,12 +248,17 @@ def book_page(book_name):
         else:
             return redirect(url_for("error_page", error="993|К сожалению этот пользователь удалён."))
     form.author.label.text = f"Автор: {book.author.name if book.author else ''}"
+    if db_sess.query(Book).filter(Book.name == book_name).first().image:
+        encoded_photo = f'data:image/png;base64,{ db_sess.query(Book).filter(Book.name == book_name).first().image}'
+    else:
+        encoded_photo = url_for('static', filename="images/main_images/no_photo.jpg")
     prms = {
         "form": form,
         "title": f'Книга {book_name}',
         "book": book,
         "usr": usr,
         "tags": db_sess.query(Tag).filter(Tag.id.in_(book.tags)).all(),
+        "photo_image": encoded_photo
     }
     db_sess.commit()
     return render_template('book.html', **prms)
