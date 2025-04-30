@@ -22,6 +22,10 @@
     <p>{{ book.about }}</p>
     {% if usr == book.author %}
         <p>{{ form.add_page(type="submit", class="btn btn-primary") }}</p>
+    {% elif usr %}
+        <label class="{% if book.id in usr.favorite_books %}like-btn-checked{% endif %} btn btn-primary" style="width: auto;">
+            {{ form.favorite(type="submit", style="display: none;") }}В любимое
+        </label>
     {% endif %}
     <p>Просмотры: {{ book.views_count }}</p>
     {{ message }}

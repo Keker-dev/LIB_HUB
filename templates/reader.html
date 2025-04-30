@@ -12,7 +12,18 @@
         </div>
         <div style="flex-grow: 1;">
             <div class="tab-content">
-                У вас нет уведомлений.
+                <div class="list-items">
+                    {% for ntf in usr.notifs["read"] %}
+                        <label class="one-line filled list-item" style="cursor: pointer; margin:0px; padding: 10px 20px;">
+                            <input type="submit" name="rem_ntf_{{ loop.index }}" style="display: none;">{{ ntf["text"] }}
+                        </label>
+                    {% endfor %}
+                    {% if not usr.notifs["read"] %}
+                        <div class="one-line filled list-item">
+                            <p style="flex-grow: 1;">У вас нет уведомлений.</p>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
             <div class="tab-content">
                 <div class="grid-for-books" style="grid-template-columns: 1fr 1fr;">
@@ -27,8 +38,48 @@
                 </div>
             </div>
             <div class="tab-content">
+                <div class="list-items">
+                    <div class="one-line filled list-head">
+                        <p style="flex-grow: 1;">Авторы</p>
+                        <p>Лайки</p>
+                    </div>
+                    {% for author in fav_auths %}
+                    <div class="one-line filled list-item">
+                        <p class="inv" style="flex-grow: 1;"><a href="/profile/{{ author.name }}">{{ author.name }}</a></p>
+                        <p style="margin-right: 10px;">Лайки: {{ author.likes_count }}</p>
+                        <label class="btn btn-primary">
+                            <input type="submit" name="rem_fav_auth_{{ author.id }}" style="display: none;">-
+                        </label>
+                    </div>
+                    {% endfor %}
+                    {% if not fav_auths %}
+                        <div class="one-line filled list-item">
+                            <p style="flex-grow: 1;">У вас нет понравившихся авторов.</p>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
             <div class="tab-content">
+                <div class="list-items">
+                    <div class="one-line filled list-head">
+                        <p style="flex-grow: 1;">Книги</p>
+                        <p>Просмотры</p>
+                    </div>
+                    {% for book in fav_books %}
+                    <div class="one-line filled list-item">
+                        <p class="inv" style="flex-grow: 1;"><a href="/book/{{ book.name }}">{{ book.name }}</a></p>
+                        <p style="margin-right: 10px;">Просмотры: {{ book.views_count }}</p>
+                        <label class="btn btn-primary">
+                            <input type="submit" name="rem_fav_book_{{ book.id }}" style="display: none;">-
+                        </label>
+                    </div>
+                    {% endfor %}
+                    {% if not fav_books %}
+                        <div class="one-line filled list-item">
+                            <p style="flex-grow: 1;">У вас нет понравившихся книг.</p>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>

@@ -30,7 +30,7 @@
         </div>
         <p style="margin-left: 20px">{{ comm.text }}</p>
         <div class="one-line">
-            {% if comm.author_id != usr.id %}
+            {% if usr and comm.author_id != usr.id %}
             <label class="like-btn {% if usr.id in comm.likes %}like-btn-checked{% endif %}">
                 {{ form.like(type="submit", value=comm.id) }}
             </label>

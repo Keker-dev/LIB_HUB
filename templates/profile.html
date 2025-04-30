@@ -19,13 +19,13 @@
     </div><br>
     {% if usr.name == ch_usr.name %}
         <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-    {% else %}
+    {% elif usr %}
     <div class="one-line filled">
         <label class="like-btn {% if usr.id in ch_usr.likes %}like-btn-checked{% endif %}">{{ form.like(type="submit") }}</label>
         <p style="margin-right: 20px;">Лайки: {{ ch_usr.likes_count }}</p>
     </div>
-    <label class="{% if usr.id in ch_usr.likes %}like-btn-checked{% endif %} btn btn-primary" style="width: auto;">
-        {{ form.like(type="submit", style="display: none;") }}В любимое
+    <label class="{% if ch_usr.id in usr.favorite_authors %}like-btn-checked{% endif %} btn btn-primary" style="width: auto;">
+        {{ form.favorite(type="submit", style="display: none;") }}В любимое
     </label>
     {% endif %}
     {{ message }}

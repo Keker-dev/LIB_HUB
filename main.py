@@ -1,7 +1,6 @@
 from data.session_db import db_sess
 from data import books_api, users_api
-from sqlalchemy import desc
-from sqlalchemy.sql.expression import case
+from sqlalchemy import desc, func, literal
 from data.users import User
 from data.books import Book
 from data.pages import Page
@@ -19,8 +18,7 @@ from forms.profile import ProfileForm
 from forms.add_book import AddBookForm
 from forms.settings import SettingsForm
 from forms.reader import ReaderForm
-from flask import Flask
-from flask import url_for, request, render_template, redirect, session, jsonify, make_response, abort
+from flask import url_for, request, render_template, redirect, session, jsonify, make_response, abort, Flask
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'libhub_secret_key'
@@ -144,6 +142,13 @@ def profile_page(name):
             lks.remove(usr.id)
             ch_usr.likes = lks
         ch_usr.likes_count = len(ch_usr.likes)
+    if form.favorite.data and usr:
+        if ch_usr.id not in usr.favorite_authors:
+            usr.favorite_authors = usr.favorite_authors + [ch_usr.id]
+        else:
+            lks = usr.favorite_authors.copy()
+            lks.remove(ch_usr.id)
+            usr.favorite_authors = lks
     db_sess.commit()
     return render_template('profile.html', title=f'Профиль {name}', form=form, ch_usr=ch_usr, usr=usr)
 
@@ -209,6 +214,13 @@ def add_page_page(book_name):
         page = Page(name=form.name.data, text=form.text.data, number=len(book.pages))
         page.book_id = book.id
         db_sess.add(page)
+        subs = db_sess.query(User).filter(
+            User.favorite_books.contains(book.id) | User.favorite_authors.contains(book.author_id)).all()
+        for sub in subs:
+            nfs = sub.notifs.copy()
+            nfs["read"] = nfs["read"] + [{"type": "new_page", "book": book.name, "page": page.number,
+                                          "text": f'Вышла новая глава "{page.name}" в "{book.name}"'}]
+            sub.notifs = nfs
         db_sess.commit()
         return redirect(url_for("book_page", book_name=book_name))
     elif not all(usr_data):
@@ -247,6 +259,13 @@ def book_page(book_name):
             return redirect(url_for("profile_page", name=book.author.name))
         else:
             return redirect(url_for("error_page", error="993|К сожалению этот пользователь удалён."))
+    if form.favorite.data and usr:
+        if book.id not in usr.favorite_books:
+            usr.favorite_books = usr.favorite_books + [book.id]
+        else:
+            bks = usr.favorite_books.copy()
+            bks.remove(book.id)
+            usr.favorite_books = bks
     form.author.label.text = f"Автор: {book.author.name if book.author else ''}"
     prms = {
         "form": form,
@@ -390,13 +409,34 @@ def reader_cabinet_page():
                                          User.name == usr_data[2]).first()
         if not usr:
             return redirect(url_for("main_page"))
+    if form.validate_on_submit():
+        for i in request.form.keys():
+            if "rem_fav_auth_" in i:
+                fav_auths = usr.favorite_authors.copy()
+                fav_auths.remove(int(i[13:]))
+                usr.favorite_authors = fav_auths
+            if "rem_fav_book_" in i:
+                fav_books = usr.favorite_books.copy()
+                fav_books.remove(int(i[13:]))
+                usr.favorite_books = fav_books
+            if "rem_ntf_" in i:
+                ntf = usr.notifs["read"][int(i[8:]) - 1]
+                ntfs = usr.notifs.copy()
+                ntfs["read"] = ntfs["read"].copy()
+                ntfs["read"].pop(int(i[8:]) - 1)
+                usr.notifs = ntfs
+                if ntf["type"] == "new_page":
+                    return redirect(url_for("book_page_page", book_name=ntf["book"], page_num=ntf["page"] - 1))
     prms = {
         "title": f'Кабинет читателя',
         "form": form,
         "usr": usr,
         "last_books": [db_sess.query(Book).get(i) for i in usr.last_books[::-1]],
+        "fav_auths": [db_sess.query(User).get(i) for i in usr.favorite_authors],
+        "fav_books": [db_sess.query(Book).get(i) for i in usr.favorite_books],
     }
     session["reader_tabs_id"] = form.tabs_class.data
+    db_sess.commit()
     return render_template('reader.html', **prms)
 
 
