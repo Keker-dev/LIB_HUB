@@ -21,10 +21,12 @@ class Book(SqlAlchemyBase):
     tags = sqlalchemy.Column(sqlalchemy.JSON, default=[])
     author_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
     author = orm.relationship('User')
+    image = sqlalchemy.Column(sqlalchemy.Text, default="")
 
     def __repr__(self):
         return f"<Book> {self.id} {self.name}"
 
     def to_dict(self):
         return {"name": self.name, "pages": len(self.pages), "about": self.about, "reg_date": self.reg_date,
-                "likes": self.likes_count, "views": self.views_count, "tags": self.tags, "author": self.author.name}
+                "image": self.image, "likes": self.likes_count, "views": self.views_count, "tags": self.tags,
+                "author": self.author.name}

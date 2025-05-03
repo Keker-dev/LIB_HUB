@@ -7,7 +7,7 @@ from data.pages import Page
 from data.tokens import Token
 from data.comments import Comment
 from data.tags import Tag
-import datetime
+import datetime, base64
 from forms.login import LoginForm
 from forms.book import BookForm
 from forms.page import PageForm
@@ -190,8 +190,15 @@ def add_book_page():
         for i in request.values:
             if "tag_" in i:
                 tags_id.append(int(i[4:]))
-        book = Book(name=form.name.data, author_id=user.id, tags=sorted(tags_id), about=form.about.data)
+        encoded_photo = ""
+        if form.photo.data:
+            photo = form.photo.data
+            encoded_photo = base64.b64encode(photo.read())
+            encoded_photo = encoded_photo.decode("utf-8")
+        book = Book(name=form.name.data, author_id=user.id, tags=sorted(tags_id), image=encoded_photo,
+                    about=form.about.data)
         db_sess.add(book)
+
         subs = db_sess.query(User).filter(User.favorite_authors.contains(book.author_id)).all()
         for sub in subs:
             nfs = sub.notifs.copy()
@@ -203,7 +210,6 @@ def add_book_page():
         return redirect(url_for("book_page", book_name=form.name.data))
     elif not all(usr_data):
         return redirect(url_for("main_page"))
-    form.price.data = 0
     return render_template('add_book.html', title='Добавление книги', form=form, tags=tags, usr=user)
 
 
@@ -221,8 +227,7 @@ def add_page_page(book_name):
         page = Page(name=form.name.data, text=form.text.data, number=len(book.pages))
         page.book_id = book.id
         db_sess.add(page)
-        subs = db_sess.query(User).filter(
-            User.favorite_books.contains(book.id) | User.favorite_authors.contains(book.author_id)).all()
+        subs = db_sess.query(User).filter(User.favorite_books.contains(book.id)).all()
         for sub in subs:
             nfs = sub.notifs.copy()
             nfs["read"] = nfs["read"] + [{"type": "new_page", "book": book.name, "page": page.number,
@@ -440,9 +445,9 @@ def reader_cabinet_page():
         "title": f'Кабинет читателя',
         "form": form,
         "usr": usr,
-        "last_books": [db_sess.query(Book).get(i) for i in usr.last_books[::-1]],
-        "fav_auths": [db_sess.query(User).get(i) for i in usr.favorite_authors],
-        "fav_books": [db_sess.query(Book).get(i) for i in usr.favorite_books],
+        "last_books": db_sess.query(Book).filter(Book.id.in_(usr.last_books)).all()[::-1],
+        "fav_auths": db_sess.query(User).filter(User.id.in_(usr.favorite_authors)).all(),
+        "fav_books": db_sess.query(Book).filter(Book.id.in_(usr.favorite_books)).all(),
     }
     session["reader_tabs_id"] = form.tabs_class.data
     db_sess.commit()

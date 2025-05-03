@@ -13,7 +13,7 @@
     <div class="grid-for-books">
         {% for book in search_results %}
         <div class="book_card">
-            <img src="../static/images/main_images/cover.png">
+            <img src="{% if book.image %}data:image/png;base64,{{ book.image }}{% else %}{{ url_for('static', filename='images/main_images/cover.png') }}{% endif %}">
             <b>{{ book.name }}</b>
             <p>Автор: {{ book.author.name }}</p>
             <a href="/book/{{ book.name }}"></a> <!-- Не удалять! Важно -->
@@ -24,7 +24,7 @@
     <div class="grid-for-books">
         {% for book in popular %}
         <div class="book_card">
-            <img src="../static/images/main_images/cover.png">
+            <img src="{% if book.image %}data:image/png;base64,{{ book.image }}{% else %}{{ url_for('static', filename='images/main_images/cover.png') }}{% endif %}">
             <b>{{ book.name }}</b>
             <p>Автор: {{ book.author.name }}</p>
             <a href="/book/{{ book.name }}"></a> <!-- Не удалять! Важно -->

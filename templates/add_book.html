@@ -2,13 +2,12 @@
 
 {% block content %}
 <h1>Добавление книги</h1>
-<form action="" method="post">
+<form action="" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <p>{{ render_field(form.name) }}</p>
     <p>{{ render_field(form.about) }}</p>
     <p>{{ render_field(form.price, type="number") }}</p>
-    <p>{{ render_field(form.is_private, type="checkbox") }}</p>
-    <p>{{ render_field(form.file, type="file") }}</p>
+    <p>{{ render_field(form.photo, type="file") }}</p>
     <p>Добавить теги</p>
         <div class="as-text" style="margin-bottom: 20px;">
             {% for tag in tags %}

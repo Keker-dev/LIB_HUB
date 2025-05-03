@@ -23,9 +23,8 @@ class User(SqlAlchemyBase, SerializerMixin):
     favorite_books = sqlalchemy.Column(sqlalchemy.JSON, default=[])
     last_books = sqlalchemy.Column(sqlalchemy.JSON, default=[])
     notifs = sqlalchemy.Column(sqlalchemy.JSON, default={"read": [], "write": []})
-    settings = sqlalchemy.Column(sqlalchemy.JSON,
-                                 default={"font": "Arial", "font-size": 20, "font-color": "#fff", "ignore": "Никакие",
-                                          "len-last-seen": 100})
+    settings = sqlalchemy.Column(sqlalchemy.JSON, default={"font": "Arial", "font-size": 20, "font-color": "#ffffff",
+                                                           "ignore": "Никакие", "len-last-seen": 100})
     books = orm.relationship("Book", back_populates='author')
     comments = orm.relationship("Comment", back_populates='author')
     tokens = orm.relationship("Token", back_populates='user')
