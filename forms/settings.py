@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, StringField, SubmitField, EmailField, IntegerField, SelectField, ColorField, \
-    RadioField
+    RadioField, TextAreaField
 from wtforms.validators import DataRequired, Length, EqualTo, Optional, NumberRange
 
 
@@ -8,7 +8,7 @@ class SettingsForm(FlaskForm):
     change_name = StringField('Изменить имя пользователя', validators=[Optional()])
     change_pass = PasswordField('Изменить пароль',
                                 validators=[Optional(), Length(min=6, message="Пароль должен быть >= 6 символов.")])
-    change_about = StringField('Изменить описание', validators=[Optional()])
+    change_about = TextAreaField('Изменить описание', validators=[Optional()])
     font = SelectField("Шрифт", validators=[Optional()],
                        choices=[('Verdana', 'Verdana'), ('Arial', 'Arial'), ('Calibri', 'Calibri')])
     font_color = ColorField("Цвет шрифта", validators=[Optional()])

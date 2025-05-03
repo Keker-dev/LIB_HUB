@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 align="center">Кабинет читателя</h1><br>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <div class="tabs one-line filled" style="flex-direction: row;">
+        <div>
+            {% for subfield in form.tabs_class %}
+            <label class="tab">{{ subfield(style="display: none;") }}{{ subfield.label.text }}</label>
+            {% endfor %}
+        </div>
+        <div style="flex-grow: 1;">
+            <div class="tab-content">
+                <div class="list-items">
+                    {% for ntf in usr.notifs["write"][::-1] %}
+                    <label class="one-line filled list-item" style="cursor: pointer; margin:0px; padding: 10px 20px;">
+                        <input type="submit" name="rem_ntf_{{ loop.index }}" style="display: none;">{{ ntf["text"] }}
+                    </label>
+                    {% endfor %}
+                    {% if not usr.notifs["write"] %}
+                    <div class="one-line filled list-item">
+                        <p style="flex-grow: 1;">У вас нет уведомлений.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="tab-content">
+                <div class="list-items">
+                    <div class="one-line filled list-head">
+                        <p style="flex-grow: 1;">Мои книги</p>
+                        <p>Просмотры</p>
+                    </div>
+                    {% for book in usr.books %}
+                    <div class="one-line filled list-item">
+                        <p class="inv" style="flex-grow: 1;"><a href="/book/{{ book.name }}">{{ book.name }}</a></p>
+                        <p style="margin-right: 20px;">Просмотры: {{ book.views_count }}</p>
+                        <label class="edit-icon btn btn-primary" style="padding: 0px 14px;">
+                            <input type="submit" name="edit_book_{{ book.id }}" style="display: none;">
+                        </label>
+                        <label class="btn btn-primary" style="background-color: #d11;">
+                            <input type="submit" name="rem_book_{{ book.id }}" style="display: none;">-
+                        </label>
+                    </div>
+                    {% endfor %}
+                    {% if not usr.books %}
+                        <div class="one-line filled list-item">
+                            <p style="flex-grow: 1;">У вас нет книг.</p>
+                        </div>
+                    {% endif %}
+                </div><br>
+                <p align="center">{{ form.add_book(type="submit", class="btn btn-primary") }}</p>
+            </div>
+        </div>
+        {{ message }}
+</form>
+{% endblock %}

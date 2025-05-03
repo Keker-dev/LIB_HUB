@@ -18,6 +18,7 @@ from forms.profile import ProfileForm
 from forms.add_book import AddBookForm
 from forms.settings import SettingsForm
 from forms.reader import ReaderForm
+from forms.author_cab import AuthorForm
 from flask import url_for, request, render_template, redirect, session, jsonify, make_response, abort, Flask
 
 app = Flask(__name__)
@@ -79,8 +80,8 @@ def main_page():
         return redirect(url_for("profile_page", name=usr.name))
     if form.settings.data and usr:
         return redirect(url_for("settings_page"))
-    if form.add_book.data:
-        return redirect(url_for("add_book_page"))
+    if form.write_cab.data:
+        return redirect(url_for("author_cabinet_page"))
     if form.read_cab.data:
         return redirect(url_for("reader_cabinet_page"))
     if request.method == "POST" and request.form["searchbtn"]:
@@ -259,6 +260,11 @@ def book_page(book_name):
         if usr.id not in book.views and usr.id != book.author_id:
             book.views = book.views + [usr.id]
             book.views_count = len(book.views)
+            if book.views_count > 10 and book.views_count % 100 == 0:
+                nfs = book.author.notifs.copy()
+                nfs["write"] = nfs["write"] + [{"type": "up_views", "book": book.name,
+                                                "text": f'Книга "{book.name}" достигла {book.views_count} просмотров!'}]
+                book.author.notifs = nfs
         if book.id not in usr.last_books and book.author_id != usr.id:
             if len(usr.last_books) < usr.settings["len-last-seen"]:
                 usr.last_books = usr.last_books + [book.id]
@@ -313,6 +319,10 @@ def book_page_page(book_name, page_num):
                                 page_num=page_num - 1 if page_num - 1 >= 0 else 0))
     if form.comm_sub.data:
         comm = Comment(text=form.comm_field.data, author_id=usr_data[0], page_id=page.id, number=len(page.comments))
+        nfs = book.author.notifs.copy()
+        nfs["write"] = nfs["write"] + [{"type": "new_comm", "book": book.name, "page": page.number,
+                                        "text": f'Новый комментарий к книге "{book.name}" главе {page.name}!'}]
+        book.author.notifs = nfs
         db_sess.add(comm)
         db_sess.commit()
     if form.like.data and usr:
@@ -324,6 +334,13 @@ def book_page_page(book_name, page_num):
             lks.remove(usr.id)
             com.likes = lks
         com.likes_count = len(com.likes)
+        if com.likes_count > 9 and com.likes_count % 10 == 0:
+            nfs = com.author.notifs.copy()
+            nfs["read"] = (nfs["read"] +
+                           [{"type": "com_like", "book": book.name, "page": page.number,
+                             "text": 'Ваш комментарий к главе "{pg}" книги "{bk}" достиг {lk} лайков!'.format(
+                                 pg=page.name, bk=book.name, lk=com.likes_count)}])
+            com.author.notifs = nfs
     prms = {
         "title": f'Книга {book_name}',
         "book": book,
@@ -439,6 +456,8 @@ def reader_cabinet_page():
                 usr.notifs = ntfs
                 if ntf["type"] == "new_page":
                     return redirect(url_for("book_page_page", book_name=ntf["book"], page_num=ntf["page"]))
+                if ntf["type"] == "com_like":
+                    return redirect(url_for("book_page_page", book_name=ntf["book"], page_num=ntf["page"]))
                 if ntf["type"] == "new_book":
                     return redirect(url_for("book_page", book_name=ntf["book"]))
     prms = {
@@ -452,6 +471,51 @@ def reader_cabinet_page():
     session["reader_tabs_id"] = form.tabs_class.data
     db_sess.commit()
     return render_template('reader.html', **prms)
+
+
+@app.route("/author", methods=["POST", "GET"])
+def author_cabinet_page():
+    usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
+    form, usr = AuthorForm(), None
+    form.tabs_class.default = session.get("author_tabs_id", "1")
+    if all(usr_data):
+        usr = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
+                                         User.name == usr_data[2]).first()
+        if not usr:
+            return redirect(url_for("main_page"))
+    if form.add_book.data:
+        return redirect(url_for("add_book_page"))
+    if form.validate_on_submit():
+        for i in request.form.keys():
+            if "rem_fav_auth_" in i:
+                fav_auths = usr.favorite_authors.copy()
+                fav_auths.remove(int(i[13:]))
+                usr.favorite_authors = fav_auths
+            if "rem_book_" in i:
+                book = db_sess.get(Book, int(i[9:]))
+                for pg in book.pages:
+                    for comm in pg.comments:
+                        db_sess.delete(comm)
+                    db_sess.delete(pg)
+                db_sess.delete(book)
+            if "rem_ntf_" in i:
+                ntf = usr.notifs["write"][int(i[8:]) - 1]
+                ntfs = usr.notifs.copy()
+                ntfs["write"] = ntfs["write"].copy()
+                ntfs["write"].pop(int(i[8:]) - 1)
+                usr.notifs = ntfs
+                if ntf["type"] == "new_comm":
+                    return redirect(url_for("book_page_page", book_name=ntf["book"], page_num=ntf["page"]))
+                if ntf["type"] == "up_views":
+                    return redirect(url_for("book_page", book_name=ntf["book"]))
+    prms = {
+        "title": f'Кабинет читателя',
+        "form": form,
+        "usr": usr,
+    }
+    session["author_tabs_id"] = form.tabs_class.data
+    db_sess.commit()
+    return render_template('author_cab.html', **prms)
 
 
 def main():

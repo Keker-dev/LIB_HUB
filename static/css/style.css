@@ -318,7 +318,7 @@ cursor: pointer; margin-bottom: 0px; border-top: 0px; border-right: 0px; transit
     .list_item { flex-direction: row; }
     .list-item:hover { background-color: rgba(255, 255, 255, 0.2); }
     .list-item > label {opacity: 0; transform: scale(0); width: 0px; padding: 0px; margin: 0px; }
-    .list-item:hover > label {opacity: 100; transform: scale(1); width: 30px; padding: 12px auto; margin: 10px 20px; }
+    .list-item:hover > label {opacity: 100; transform: scale(1); width: initial; padding: 0px 12px; margin: 10px 20px 10px 0px; }
 }
 .book_image{
     width: 200px;
@@ -326,6 +326,12 @@ cursor: pointer; margin-bottom: 0px; border-top: 0px; border-right: 0px; transit
     display: block;
     object-fit: cover;
     border-radius: 10px;
+}
+.edit-icon{
+    background-image: url("../images/main_images/light_edit.png");
+    background-color: transparent;
+    background-size: 100% 100%;
+    background-position: 25% 25%;
 }
 
 /* todo: light_theme bg: 413023; main_bg: faf5ea; hover: 2b1d18; font: black*/
