@@ -5,7 +5,7 @@
     {{ form.hidden_tag() }}
     <div class="one-line filled" style="flex-direction: row;">
         <p style="flex-grow: 1;">{{ render_field(form.search, type="search") }}</p>
-        <button type="submit" class="searchbtn" name="searchbtn" value="True" style="vertical-align: bottom;">
+        <button type="submit" class="searchbtn" name="searchbtn" value="True">
             <img src="../static/images/main_images/search.png" width="25">
         </button>
     </div>
@@ -13,7 +13,7 @@
     <div class="grid-for-books">
         {% for book in search_results %}
         <div class="book_card">
-            <img src="../static/images/main_images/cover.png">
+            <img src="{% if book.image %}data:image/png;base64,{{ book.image }}{% else %}{{ url_for('static', filename='images/main_images/cover.png') }}{% endif %}">
             <b>{{ book.name }}</b>
             <p>Автор: {{ book.author.name }}</p>
             <a href="/book/{{ book.name }}"></a> <!-- Не удалять! Важно -->
@@ -24,7 +24,7 @@
     <div class="grid-for-books">
         {% for book in popular %}
         <div class="book_card">
-            <img src="../static/images/main_images/cover.png">
+            <img src="{% if book.image %}data:image/png;base64,{{ book.image }}{% else %}{{ url_for('static', filename='images/main_images/cover.png') }}{% endif %}">
             <b>{{ book.name }}</b>
             <p>Автор: {{ book.author.name }}</p>
             <a href="/book/{{ book.name }}"></a> <!-- Не удалять! Важно -->
@@ -39,14 +39,14 @@
 
 {% block reg %}
     <form action="" method="post">
-
         {% if usr.name %}
-            <p class="header_block">{{ form.add_book(type="submit", class="btn btn-primary") }}</p>
+            <div class="header_block">{{ form.read_cab(type="submit", class="btn btn-primary") }}</div>
+            <div class="header_block">{{ form.add_book(type="submit", class="btn btn-primary") }}</div>
             <div class="header_block">{{ form.profile(type="submit", class="btn btn-primary profile_icon") }}</div>
             <div class="header_block">{{ form.settings(type="submit", class="btn btn-primary settings_icon") }}</div>
         {% else %}
-            <p class="header_block">{{ form.reg(type="submit", class="header_block btn btn-primary") }}</p>
-            <p class="header_block">{{ form.log(type="submit", class="header_block btn btn-primary") }}</p>
+            <p class="header_block">{{ form.reg(type="submit", class="btn btn-primary") }}</p>
+            <p class="header_block">{{ form.log(type="submit", class="btn btn-primary") }}</p>
         {% endif %}
     </form>
 {% endblock %}

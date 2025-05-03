@@ -4,26 +4,35 @@
 <h1 align="center">Книга "{{ book.name }}"</h1>
 <form action="" method="post">
     {{ form.hidden_tag() }}
-    <h3>{{ form.author(type="submit", class="inv-button") }}</h3>
-
-    <div class="as-text" style="margin-bottom: 20px;">
-        <img src="{{ photo_image }}" class="book_image" width="200px" height="300px">
-        <div class="tags_book">
-            {% for tag in tags %}
-                <label class="tag_checkbox">
+    <div class="one-line filled" style="flex-direction: row;">
+        <div style="margin-right: 20px; flex-grow: 1;">
+            <h3>{{ form.author(type="submit", class="inv-button") }}</h3>
+            <p>{{ form.read(type="submit", class="btn btn-primary") }}</p><br>
+            <h3 align="center">Теги</h3>
+            <div class="as-text">
+                {% for tag in tags %}
+                <label class="tag_checkbox" style="">
                     <input type="submit" name="tag_{{ tag.id }}">
                     <span class="add_tag" data-title="{{tag.about}}">#{{ tag.name }}</span>
                 </label>
-            {% endfor %}
+                {% endfor %}
+                {% if tags|length == 0 %}
+                <p>У книги не тегов.</p>
+                {% endif %}
+            </div>
         </div>
-        {% if tags|length == 0 %}
-            <p>У книги не тегов.</p>
-        {% endif %}
-    </div>
-    <h3 align="left">Описание:</h3><br>
+        <img src="{% if book.image %}data:image/png;base64,{{ book.image }}{% else %}{{ url_for('static', filename='images/main_images/cover.png') }}{% endif %}"
+             class="book_image">
+    </div><br>
+    <h3 align="center">Описание</h3><br>
     <p class="about_book">{{ book.about }}</p>
     {% if usr == book.author %}
-        <p>{{ form.add_page(type="submit", class="btn btn-primary") }}</p>
+    <p>{{ form.add_page(type="submit", class="btn btn-primary") }}</p>
+    {% elif usr %}
+    <label class="{% if book.id in usr.favorite_books %}like-btn-checked{% endif %} btn btn-primary"
+           style="width: auto;">
+        {{ form.favorite(type="submit", style="display: none;") }}В любимое
+    </label>
     {% endif %}
     <p>Просмотры: {{ book.views_count }}</p>
     {{ message }}

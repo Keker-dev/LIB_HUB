@@ -7,8 +7,7 @@
     <p>{{ render_field(form.name) }}</p>
     <p>{{ render_field(form.about) }}</p>
     <p>{{ render_field(form.price, type="number") }}</p>
-    <p>{{ render_field(form.is_private, type="checkbox") }}</p>
-    <p>{{ form.photo.label }} {{ form.photo() }}</p>
+    <p>{{ render_field(form.photo, type="file") }}</p>
     <p>Добавить теги</p>
         <div class="as-text" style="margin-bottom: 20px;">
             {% for tag in tags %}

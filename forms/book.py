@@ -7,3 +7,4 @@ class BookForm(FlaskForm):
     add_page = SubmitField('Добавить главу')
     author = SubmitField(' ')
     read = SubmitField('Читать')
+    favorite = SubmitField('В любимое')

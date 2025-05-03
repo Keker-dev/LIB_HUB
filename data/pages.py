@@ -19,3 +19,7 @@ class Page(SqlAlchemyBase):
 
     def __repr__(self):
         return f"<Page> {self.id} {self.name}"
+
+    def to_dict(self):
+        return {"name": self.name, "reg_date": self.reg_date, "comments": len(self.comments), "book": self.book.name,
+                "number": self.number, "text": self.text}

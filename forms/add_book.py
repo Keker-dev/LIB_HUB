@@ -8,6 +8,5 @@ class AddBookForm(FlaskForm):
     about = StringField("Описание", validators=[Optional()])
     price = IntegerField("Цена", validators=[InputRequired(),
                                              NumberRange(min=0, message="Цена не может быть ниже 0!")], default=0)
-    is_private = BooleanField("Только для подписчиков", validators=[Optional()])
-    photo = FileField("Фото книги (необязательно)", validators=[Optional()])
+    photo = FileField("Обложка книги формата 2:3 (необязательно)", validators=[Optional()])
     submit = SubmitField('Опубликовать')

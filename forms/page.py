@@ -8,4 +8,4 @@ class PageForm(FlaskForm):
     prev = SubmitField('Назад')
     comm_field = StringField("Написать комментарий", validators=[Optional()])
     comm_sub = SubmitField('Отправить')
-    like = SubmitField('Лайк')
+    like = StringField('Лайк')
