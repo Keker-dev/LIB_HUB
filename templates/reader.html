@@ -13,7 +13,7 @@
         <div style="flex-grow: 1;">
             <div class="tab-content">
                 <div class="list-items">
-                    {% for ntf in usr.notifs["read"] %}
+                    {% for ntf in usr.notifs["read"][::-1] %}
                         <label class="one-line filled list-item" style="cursor: pointer; margin:0px; padding: 10px 20px;">
                             <input type="submit" name="rem_ntf_{{ loop.index }}" style="display: none;">{{ ntf["text"] }}
                         </label>

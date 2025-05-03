@@ -99,6 +99,8 @@ body{
     border: 2px;
     border-radius: 5px;
     height: calc(1.5em + .75rem + 2px);
+    vertical-align: bottom;
+    user-select: none;
 }
 .book-anim{
     background-image: url("../images/main_images/icon.gif");

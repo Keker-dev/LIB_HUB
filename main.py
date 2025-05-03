@@ -192,6 +192,13 @@ def add_book_page():
                 tags_id.append(int(i[4:]))
         book = Book(name=form.name.data, author_id=user.id, tags=sorted(tags_id), about=form.about.data)
         db_sess.add(book)
+        subs = db_sess.query(User).filter(User.favorite_authors.contains(book.author_id)).all()
+        for sub in subs:
+            nfs = sub.notifs.copy()
+            nfs["read"] = nfs["read"] + [
+                {"type": "new_book", "book": book.name,
+                 "text": f'Вышла новая книга "{book.name}" от {book.author.name}'}]
+            sub.notifs = nfs
         db_sess.commit()
         return redirect(url_for("book_page", book_name=form.name.data))
     elif not all(usr_data):
@@ -426,7 +433,9 @@ def reader_cabinet_page():
                 ntfs["read"].pop(int(i[8:]) - 1)
                 usr.notifs = ntfs
                 if ntf["type"] == "new_page":
-                    return redirect(url_for("book_page_page", book_name=ntf["book"], page_num=ntf["page"] - 1))
+                    return redirect(url_for("book_page_page", book_name=ntf["book"], page_num=ntf["page"]))
+                if ntf["type"] == "new_book":
+                    return redirect(url_for("book_page", book_name=ntf["book"]))
     prms = {
         "title": f'Кабинет читателя',
         "form": form,
