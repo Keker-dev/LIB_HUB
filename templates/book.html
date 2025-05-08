@@ -7,6 +7,7 @@
     <div class="one-line filled" style="flex-direction: row;">
         <div style="margin-right: 20px; flex-grow: 1;">
             <h3>{{ form.author(type="submit", class="inv-button") }}</h3>
+            <p>Количество глав: {{ book.pages|length }}</p>
             <p>{{ form.read(type="submit", class="btn btn-primary") }}</p><br>
             <h3 align="center">Теги</h3>
             <div class="as-text">
@@ -26,6 +27,14 @@
     </div><br>
     <h3 align="center">Описание</h3><br>
     <p class="about_book">{{ book.about }}</p>
+    <h3 align="center">Главы</h3>
+    <div class="list-items inv" style="border: 0px;">
+        {% for pg in book.pages %}
+        <a class="list-item one-line" style="cursor: pointer; padding: 5px; border-radius: 5px;" href="/book/{{ book.name }}/page/{{ pg.number }}">
+            {{ pg.number }}. {{ pg.name }}
+        </a>
+        {% endfor %}
+    </div><br>
     {% if usr == book.author %}
     <p>{{ form.add_page(type="submit", class="btn btn-primary") }}</p>
     {% elif usr %}

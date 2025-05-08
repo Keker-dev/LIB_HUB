@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Изменение книги "{{ book.name }}"</h1>
+<form action="" method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <p>{{ render_field(form.name) }}</p>
+    <p>{{ render_field(form.about) }}</p>
+    <p>{{ render_field(form.price, type="number") }}</p>
+    <p>{{ render_field(form.photo, type="file") }}</p>
+    <p>Изменить теги</p>
+        <div class="as-text" style="margin-bottom: 20px;">
+            {% for tag in tags %}
+            <label class="tag_checkbox">
+                <input type="checkbox" name="tag_{{ tag.id }}">
+                <span class="add_tag" data-title="{{tag.about}}">#{{ tag.name }}</span>
+            </label>
+            {% endfor %}
+        </div>
+    <p align="center bottom">{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {% if message %}
+        <p class="alert alert-danger" role="alert">{{message}}</p>
+    {% endif %}
+</form>
+{% endblock %}

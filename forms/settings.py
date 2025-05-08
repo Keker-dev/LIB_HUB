@@ -12,7 +12,7 @@ class SettingsForm(FlaskForm):
     font = SelectField("Шрифт", validators=[Optional()],
                        choices=[('Verdana', 'Verdana'), ('Arial', 'Arial'), ('Calibri', 'Calibri')])
     font_color = ColorField("Цвет шрифта", validators=[Optional()])
-    font_size = IntegerField('Размер шрифта', validators=[Optional(), NumberRange(min=1, max=100)])
+    font_size = IntegerField('Размер шрифта', validators=[Optional(), NumberRange(min=10, max=25)])
     ignore = SelectField("Какие уведомления игнорировать", validators=[Optional()],
                          choices=[('Все', 'Все'), ('Комментарии к моим работам', 'Комментарии к моим работам'),
                                   ('Никакие', 'Никакие')])

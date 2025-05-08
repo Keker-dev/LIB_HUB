@@ -11,6 +11,7 @@ class Book(SqlAlchemyBase):
                            primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=True, unique=True)
     pages = orm.relationship("Page", back_populates='book')
+    price = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     about = sqlalchemy.Column(sqlalchemy.String, default="")
     reg_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     likes = sqlalchemy.Column(sqlalchemy.JSON, default=[])

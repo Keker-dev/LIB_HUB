@@ -32,9 +32,9 @@
                         <p>Просмотры</p>
                     </div>
                     {% for book in usr.books %}
-                    <div class="one-line filled list-item">
+                    <div class="one-line filled list-item" style="max-width: 900px;">
                         <p class="inv" style="flex-grow: 1;"><a href="/book/{{ book.name }}">{{ book.name }}</a></p>
-                        <p style="margin-right: 20px;">Просмотры: {{ book.views_count }}</p>
+                        <p style="margin-right: 20px; min-width: fit-content; ">Просмотры: {{ book.views_count }}</p>
                         <label class="edit-icon btn btn-primary" style="padding: 0px 14px;">
                             <input type="submit" name="edit_book_{{ book.id }}" style="display: none;">
                         </label>

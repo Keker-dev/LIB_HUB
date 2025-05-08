@@ -14,7 +14,6 @@
             <div class="tab-content">
                 <p>{{ render_field(form.change_name) }}</p>
                 <p>{{ render_field(form.change_pass, type="password") }}</p>
-                <!-- todo: сделать вводимый текст сверху большого поля id="change_about" -->
                 <p>{{ render_field(form.change_about) }}</p>
                 <p style="display: none;">{{ form.submit(type="submit", class="btn btn-primary") }}</p>
                 <p>{{ form.logout(type="submit", class="btn btn-primary") }}</p>

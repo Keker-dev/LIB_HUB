@@ -30,6 +30,9 @@
             <a href="/book/{{ book.name }}"></a> <!-- Не удалять! Важно -->
         </div>
         {% endfor %}
+        {% if not popular %}
+        <p>Тут пока ничего нет. :(</p>
+        {% endif %}
     </div>
     {% if message %}
         <p class="alert alert-danger" role="alert">{{message}}</p>

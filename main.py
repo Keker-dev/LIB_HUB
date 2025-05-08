@@ -11,11 +11,12 @@ import datetime, base64
 from forms.login import LoginForm
 from forms.book import BookForm
 from forms.page import PageForm
-from forms.add_page import AddPageForm
+from forms.add_page import AddPageForm, decode_bytes
 from forms.register import RegisterForm
 from forms.main_page import MainPageForm
 from forms.profile import ProfileForm
 from forms.add_book import AddBookForm
+from forms.edit_book import EditBookForm
 from forms.settings import SettingsForm
 from forms.reader import ReaderForm
 from forms.author_cab import AuthorForm
@@ -197,7 +198,7 @@ def add_book_page():
             encoded_photo = base64.b64encode(photo.read())
             encoded_photo = encoded_photo.decode("utf-8")
         book = Book(name=form.name.data, author_id=user.id, tags=sorted(tags_id), image=encoded_photo,
-                    about=form.about.data)
+                    price=form.price.data, about=form.about.data)
         db_sess.add(book)
 
         subs = db_sess.query(User).filter(User.favorite_authors.contains(book.author_id)).all()
@@ -214,6 +215,47 @@ def add_book_page():
     return render_template('add_book.html', title='Добавление книги', form=form, tags=tags, usr=user)
 
 
+@app.route("/book/<book_name>/edit", methods=["POST", "GET"])
+def edit_book_page(book_name):
+    usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
+    tags = db_sess.query(Tag).all()
+    form, user = EditBookForm(), None
+    book = db_sess.query(Book).filter(Book.name == book_name).first()
+    if not book:
+        abort(404)
+    if form.validate_on_submit() and all(usr_data):
+        user = db_sess.query(User).filter(User.id == usr_data[0], User.email == usr_data[1],
+                                          User.name == usr_data[2]).first()
+        if not user:
+            return redirect(url_for("main_page"))
+        tags_id = []
+        for i in request.values:
+            if "tag_" in i:
+                tags_id.append(int(i[4:]))
+        encoded_photo = ""
+        if form.photo.data:
+            photo = form.photo.data
+            encoded_photo = base64.b64encode(photo.read())
+            encoded_photo = encoded_photo.decode("utf-8")
+        if encoded_photo:
+            book.image = encoded_photo
+        if db_sess.query(Book).filter(Book.name == form.name.data).first():
+            form.name.errors = tuple([*form.name.errors, "Это имя занято."])
+        else:
+            book.name = form.name.data
+        book.about = form.about.data
+        book.price = form.price.data
+        db_sess.commit()
+        return redirect(url_for("book_page", book_name=form.name.data))
+    elif not all(usr_data):
+        return redirect(url_for("main_page"))
+    form.name.data = book.name
+    form.about.data = book.about
+    form.price.data = book.price
+    return render_template('edit_book.html', title='Добавление книги', form=form, tags=tags,
+                           usr=user, book=book)
+
+
 @app.route("/book/<book_name>/add_page", methods=["POST", "GET"])
 def add_page_page(book_name):
     usr_data = [session.get("id", None), session.get("email", None), session.get("name", None)]
@@ -225,7 +267,8 @@ def add_page_page(book_name):
             return redirect(url_for("main_page"))
     if form.validate_on_submit() and usr:
         book = db_sess.query(Book).filter(Book.author_id == usr_data[0], Book.name == book_name).first()
-        page = Page(name=form.name.data, text=form.text.data, number=len(book.pages))
+        text = form.text.data if form.text.data else decode_bytes(form.file.data.read())
+        page = Page(name=form.name.data, text=text, number=len(book.pages))
         page.book_id = book.id
         db_sess.add(page)
         subs = db_sess.query(User).filter(User.favorite_books.contains(book.id)).all()
@@ -487,17 +530,20 @@ def author_cabinet_page():
         return redirect(url_for("add_book_page"))
     if form.validate_on_submit():
         for i in request.form.keys():
-            if "rem_fav_auth_" in i:
-                fav_auths = usr.favorite_authors.copy()
-                fav_auths.remove(int(i[13:]))
-                usr.favorite_authors = fav_auths
             if "rem_book_" in i:
                 book = db_sess.get(Book, int(i[9:]))
+                if not book:
+                    continue
                 for pg in book.pages:
                     for comm in pg.comments:
                         db_sess.delete(comm)
                     db_sess.delete(pg)
                 db_sess.delete(book)
+            if "edit_book_" in i:
+                book = db_sess.get(Book, int(i[10:]))
+                if not book:
+                    continue
+                return redirect(url_for("edit_book_page", book_name=book.name))
             if "rem_ntf_" in i:
                 ntf = usr.notifs["write"][int(i[8:]) - 1]
                 ntfs = usr.notifs.copy()
