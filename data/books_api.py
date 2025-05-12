@@ -49,7 +49,7 @@ def create_book():
         return make_response(jsonify({'error': 'User not found or token expired.'}), 403)
     if not request.json:
         return make_response(jsonify({'error': 'Empty request'}), 400)
-    elif not all(key in request.json for key in ['name', 'about', 'tags']):
+    elif not all(key in request.json for key in ['name', 'about', 'tags', 'price']):
         return make_response(jsonify({'error': 'Bad request'}), 400)
     if not all([db_sess.query(Tag).get(tag_id) for tag_id in request.json["tags"]]):
         return make_response(jsonify({'error': 'Bad tags'}), 400)

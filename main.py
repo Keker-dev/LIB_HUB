@@ -1,4 +1,5 @@
 from data.session_db import db_sess
+from socket import gethostname
 from data import books_api, users_api
 from sqlalchemy import desc, func, literal
 from data.users import User
@@ -24,6 +25,8 @@ from flask import url_for, request, render_template, redirect, session, jsonify,
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'libhub_secret_key'
+app.register_blueprint(books_api.blueprint)
+app.register_blueprint(users_api.blueprint)
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(
     days=365
 )
@@ -565,8 +568,6 @@ def author_cabinet_page():
 
 
 def main():
-    app.register_blueprint(books_api.blueprint)
-    app.register_blueprint(users_api.blueprint)
     if not db_sess.query(Tag).all():
         tags = [['Фантастика', 'Миры будущего с чудесами технологий и неизведанными галактиками.'],
                 ['Приключения', 'Захватывающие путешествия главных героев, полные неожиданных встреч и испытаний.'],
@@ -593,7 +594,8 @@ def main():
         for tag in tags:
             db_sess.add(Tag(name=tag[0], about=tag[1]))
         db_sess.commit()
-    app.run(debug=True)
+    if 'liveconsole' not in gethostname():
+        app.run()
 
 
 if __name__ == '__main__':
